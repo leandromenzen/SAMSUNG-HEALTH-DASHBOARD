@@ -33,7 +33,6 @@ License: MIT
 //# sourceMappingURL=chart.umd.min.js.map
 
 </script>
-
 <style>
   :root{
     --bg:#0b0e12;
@@ -140,6 +139,60 @@ License: MIT
   .footer-note{color:var(--ink-faint);font-size:11.5px;margin-top:26px;line-height:1.6;}
   ::-webkit-scrollbar{width:8px;height:8px;}
   ::-webkit-scrollbar-thumb{background:#232a33;border-radius:8px;}
+
+
+  /* ---------- novidades desta versão ---------- */
+  .nav-section-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);padding:14px 12px 4px;}
+
+  /* date-range / calendar bar */
+  .daterange{display:flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:4px 6px;}
+  .daterange input[type=date]{background:transparent;border:none;color:var(--ink);font-size:12px;padding:4px 2px;width:112px;color-scheme:dark;}
+  .daterange span.sep{color:var(--ink-faint);font-size:11px;}
+  .chips{display:flex;gap:5px;flex-wrap:wrap;}
+  .chip{font-size:11px;padding:5px 10px;border-radius:20px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink-dim);cursor:pointer;}
+  .chip:hover{border-color:#324150;color:var(--ink);}
+  .chip.active{background:var(--sleep);border-color:var(--sleep);color:#001018;font-weight:700;}
+
+  /* multi-select de atividades */
+  .msel{position:relative;}
+  .msel-btn{display:flex;align-items:center;gap:6px;}
+  .msel-panel{position:absolute;top:calc(100% + 6px);right:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;width:260px;max-height:320px;overflow:auto;box-shadow:0 12px 32px rgba(0,0,0,.45);z-index:40;display:none;}
+  .msel-panel.open{display:block;}
+  .msel-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;font-size:12.5px;cursor:pointer;}
+  .msel-row:hover{background:var(--panel-2);}
+  .msel-row input{accent-color:var(--exercise);}
+  .msel-actions{display:flex;justify-content:space-between;padding:4px 8px 8px;font-size:11px;}
+  .msel-actions a{color:var(--sleep);cursor:pointer;text-decoration:none;}
+  .msel-count{background:var(--exercise);color:#00210f;font-size:10px;font-weight:800;border-radius:20px;padding:1px 6px;min-width:16px;text-align:center;}
+
+  /* anchor quick-nav dentro de uma página longa */
+  .subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5;}
+  .subnav a{font-size:11.5px;color:var(--ink-dim);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:6px 12px;text-decoration:none;scroll-margin-top:12px;}
+  .subnav a:hover{color:var(--ink);border-color:#324150;}
+  .subsection{scroll-margin-top:12px;margin-top:28px;}
+  .subsection:first-of-type{margin-top:6px;}
+  .subsection-head{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;}
+  .subsection-head h2{font-size:15px;}
+  .subsection-head .n{font-size:11px;color:var(--ink-faint);}
+
+  .disclaimer{font-size:11px;color:var(--ink-faint);background:var(--panel-2);border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin-top:10px;line-height:1.5;}
+  .cat-pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;}
+
+  .mini-table td,.mini-table th{padding:5px 8px;font-size:11.5px;}
+  .two-col-kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .badge-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto;}
+  .badge-row{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:7px 10px;background:var(--panel-2);border-radius:9px;}
+  .badge-row .ic{font-size:16px;}
+  .badge-row .when{margin-left:auto;color:var(--ink-faint);font-size:11px;}
+
+  .fitness-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;text-align:center;}
+  .fitness-grid div .v{font-family:'JetBrains Mono';font-size:19px;font-weight:700;}
+  .fitness-grid div .l{font-size:10.5px;color:var(--ink-faint);margin-top:3px;}
+  @media (max-width:700px){ .fitness-grid{grid-template-columns:repeat(2,1fr);} }
+
+  .scorebar{height:8px;border-radius:5px;background:var(--panel-2);overflow:hidden;margin-top:4px;}
+  .scorebar div{height:100%;border-radius:5px;}
+
 </style>
 </head>
 <body>
@@ -169,12 +222,29 @@ License: MIT
       </div>
       <div class="controls">
         <span class="status-pill" id="statusPill"><span class="dot"></span><span id="statusText">nenhum dado carregado</span></span>
-        <select id="rangeSelect">
-          <option value="30">Últimos 30 dias</option>
-          <option value="90">Últimos 90 dias</option>
-          <option value="180">Últimos 180 dias</option>
-          <option value="99999" selected>Todo o período</option>
-        </select>
+
+        <div class="chips" id="rangeChips">
+          <span class="chip" data-days="7">7d</span>
+          <span class="chip" data-days="30">30d</span>
+          <span class="chip" data-days="90">90d</span>
+          <span class="chip" data-days="180">180d</span>
+          <span class="chip" data-days="365">1a</span>
+          <span class="chip active" data-days="99999">Tudo</span>
+        </div>
+        <div class="daterange">
+          <input type="date" id="dateFrom" title="De">
+          <span class="sep">→</span>
+          <input type="date" id="dateTo" title="Até">
+        </div>
+
+        <div class="msel" id="activityMsel">
+          <button class="msel-btn" id="activityMselBtn">🏷️ Atividades <span class="msel-count" id="activityMselCount">todas</span></button>
+          <div class="msel-panel" id="activityMselPanel">
+            <div class="msel-actions"><a id="actSelAll">selecionar todas</a><a id="actSelNone">limpar</a></div>
+            <div id="activityMselList"></div>
+          </div>
+        </div>
+
         <input type="file" id="fileInput" webkitdirectory directory multiple>
         <button class="primary" id="pickBtn">📁 Selecionar pasta</button>
       </div>
@@ -184,7 +254,7 @@ License: MIT
     <div id="emptyState" class="empty">
       <svg class="pulse-line" viewBox="0 0 220 44"><polyline points="0,22 40,22 52,6 64,38 76,22 100,22 108,14 116,30 124,22 220,22" fill="none" stroke="#ff5d6c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h2>Nenhum dado carregado ainda</h2>
-      <p>Clique em <b>Selecionar pasta</b> e escolha a pasta onde você extraiu o .zip do Samsung Health (a pasta que contém os arquivos <span class="mono">com.samsung.shealth.*.csv</span>). O navegador lê os arquivos localmente — nada sai da sua máquina.</p>
+      <p>Clique em <b>Selecionar pasta</b> e escolha a pasta onde você extraiu o .zip do Samsung Health (a pasta que contém os arquivos <span class="mono">com.samsung.shealth.*.csv</span> e a subpasta <span class="mono">jsons/</span>). O navegador lê os arquivos localmente — nada sai da sua máquina.</p>
       <button class="primary" id="pickBtn2">📁 Selecionar pasta</button>
     </div>
 
@@ -192,6 +262,7 @@ License: MIT
       <!-- ================= OVERVIEW ================= -->
       <div class="page active" id="page-overview">
         <div class="grid cols-4" id="ovKpis"></div>
+        <div class="grid cols-4 section-gap" id="ovKpis2"></div>
         <div class="grid cols-2 section-gap">
           <div class="card">
             <div class="panel-title"><h3>Frequência cardíaca — período</h3><span class="badge" id="ovHrBadge">—</span></div>
@@ -220,37 +291,139 @@ License: MIT
 
       <!-- ================= HEART ================= -->
       <div class="page" id="page-heart">
-        <div class="grid cols-4" id="heartKpis"></div>
-        <div class="card section-gap">
-          <div class="panel-title">
-            <h3>FC ao longo do dia</h3>
-            <select id="heartDaySelect" style="min-width:150px;"></select>
+        <nav class="subnav">
+          <a href="#sec-hr">Frequência cardíaca</a>
+          <a href="#sec-bp">Pressão arterial</a>
+          <a href="#sec-hrv">HRV</a>
+          <a href="#sec-o2">Oxigenação &amp; respiração</a>
+          <a href="#sec-temp">Temperatura</a>
+          <a href="#sec-age">Antioxidante &amp; AGE</a>
+          <a href="#sec-ecg">ECG</a>
+          <a href="#sec-scores">Scores</a>
+        </nav>
+
+        <div class="subsection" id="sec-hr">
+          <div class="subsection-head"><h2>❤️ Frequência cardíaca</h2></div>
+          <div class="grid cols-4" id="heartKpis"></div>
+          <div class="card section-gap">
+            <div class="panel-title">
+              <h3>FC ao longo do dia</h3>
+              <select id="heartDaySelect" style="min-width:150px;"></select>
+            </div>
+            <div class="chart-wrap tall"><canvas id="heartDayChart"></canvas></div>
           </div>
-          <div class="chart-wrap tall"><canvas id="heartDayChart"></canvas></div>
+          <div class="grid cols-2 section-gap">
+            <div class="card">
+              <div class="panel-title"><h3>FC de repouso (mínima diária) — evolução</h3></div>
+              <div class="chart-wrap"><canvas id="heartRestingChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="panel-title"><h3>Distribuição de FC por horário do dia</h3></div>
+              <div class="chart-wrap"><canvas id="heartHourChart"></canvas></div>
+            </div>
+          </div>
+          <div class="grid cols-2 section-gap">
+            <div class="card">
+              <div class="panel-title"><h3>FC média por dia da semana</h3></div>
+              <div class="chart-wrap"><canvas id="heartWeekdayChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="panel-title"><h3>Episódios de FC elevada (&gt;100 bpm fora de exercício)</h3><span class="badge" id="heartEpBadge">—</span></div>
+              <div style="max-height:260px;overflow:auto;"><table id="heartEpTable"><thead><tr><th>Data</th><th>Hora</th><th>FC (bpm)</th></tr></thead><tbody></tbody></table></div>
+            </div>
+          </div>
         </div>
-        <div class="grid cols-2 section-gap">
-          <div class="card">
-            <div class="panel-title"><h3>FC de repouso (mínima diária) — evolução</h3></div>
-            <div class="chart-wrap"><canvas id="heartRestingChart"></canvas></div>
+
+        <div class="subsection" id="sec-bp">
+          <div class="subsection-head"><h2>🩸 Pressão arterial</h2><span class="n">medições do Samsung Health Monitor</span></div>
+          <div class="grid cols-4" id="bpKpis"></div>
+          <div class="card section-gap">
+            <div class="panel-title"><h3>Sistólica × diastólica ao longo do tempo</h3></div>
+            <div class="chart-wrap tall"><canvas id="bpChart"></canvas></div>
           </div>
-          <div class="card">
-            <div class="panel-title"><h3>Distribuição de FC por horário do dia</h3></div>
-            <div class="chart-wrap"><canvas id="heartHourChart"></canvas></div>
+          <div class="card section-gap">
+            <div class="panel-title"><h3>Medições</h3><span class="badge" id="bpCountBadge">—</span></div>
+            <div style="max-height:260px;overflow:auto;"><table class="mini-table" id="bpTable"><thead><tr><th>Data</th><th>Sistólica</th><th>Diastólica</th><th>Pulso</th><th>PAM</th><th>Classificação</th></tr></thead><tbody></tbody></table></div>
+          </div>
+          <p class="disclaimer">Classificação de referência da American Heart Association (AHA) com base nos valores informados — não é um diagnóstico médico. PAM = Pressão Arterial Média, calculada como (sistólica + 2×diastólica) / 3.</p>
+        </div>
+
+        <div class="subsection" id="sec-hrv">
+          <div class="subsection-head"><h2>📈 Variabilidade da frequência cardíaca (HRV)</h2></div>
+          <div id="hrvCard">
+            <div class="grid cols-4" id="hrvKpis"></div>
+            <div class="card section-gap">
+              <div class="panel-title"><h3>RMSSD e SDNN ao longo do tempo</h3></div>
+              <div class="chart-wrap"><canvas id="hrvChart"></canvas></div>
+            </div>
+            <div id="hrvEmptyNote" style="color:var(--ink-faint);font-size:13px;"></div>
           </div>
         </div>
-        <div class="grid cols-2 section-gap">
-          <div class="card">
-            <div class="panel-title"><h3>FC média por dia da semana</h3></div>
-            <div class="chart-wrap"><canvas id="heartWeekdayChart"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="panel-title"><h3>Episódios de FC elevada (&gt;100 bpm em repouso aparente)</h3><span class="badge" id="heartEpBadge">—</span></div>
-            <div style="max-height:260px;overflow:auto;"><table id="heartEpTable"><thead><tr><th>Data</th><th>Hora</th><th>FC (bpm)</th></tr></thead><tbody></tbody></table></div>
+
+        <div class="subsection" id="sec-o2">
+          <div class="subsection-head"><h2>🫁 Oxigenação &amp; respiração</h2></div>
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="panel-title"><h3>Saturação de oxigênio (SpO2)</h3><span class="badge" id="spo2Badge">—</span></div>
+              <div class="chart-wrap"><canvas id="spo2Chart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="panel-title"><h3>Frequência respiratória</h3><span class="badge" id="respBadge">—</span></div>
+              <div class="chart-wrap"><canvas id="respChart"></canvas></div>
+            </div>
           </div>
         </div>
-        <div class="card section-gap" id="hrvCard">
-          <div class="panel-title"><h3>HRV (variabilidade da frequência cardíaca)</h3></div>
-          <div id="hrvContent" style="color:var(--ink-faint);font-size:13px;">Verificando dados de HRV…</div>
+
+        <div class="subsection" id="sec-temp">
+          <div class="subsection-head"><h2>🌡️ Temperatura de pele</h2></div>
+          <div class="card">
+            <div class="panel-title"><h3>Temperatura medida à noite (vs. linha de base)</h3><span class="badge" id="tempBadge">—</span></div>
+            <div class="chart-wrap"><canvas id="tempChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="subsection" id="sec-age">
+          <div class="subsection-head"><h2>🥗 Antioxidantes &amp; AGE (glicação)</h2></div>
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="panel-title"><h3>Índice de antioxidantes (escaneamento de pele)</h3><span class="badge" id="antioxBadge">—</span></div>
+              <div class="chart-wrap"><canvas id="antioxChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="panel-title"><h3>AGE — produtos avançados de glicação</h3><span class="badge" id="ageBadge">—</span></div>
+              <div class="chart-wrap"><canvas id="ageChart"></canvas></div>
+            </div>
+          </div>
+          <p class="disclaimer">Índices calculados pelo sensor óptico do relógio/app a partir do escaneamento de pele. São indicadores de bem-estar do próprio Samsung Health, não exames clínicos.</p>
+        </div>
+
+        <div class="subsection" id="sec-ecg">
+          <div class="subsection-head"><h2>〰️ ECG</h2></div>
+          <div class="grid cols-4" id="ecgKpis"></div>
+          <div class="card section-gap">
+            <div class="panel-title"><h3>Leituras de ECG</h3><span class="badge" id="ecgCountBadge">—</span></div>
+            <div style="max-height:260px;overflow:auto;"><table class="mini-table" id="ecgTable"><thead><tr><th>Data</th><th>FC média</th><th>Amostras</th><th>Código</th></tr></thead><tbody></tbody></table></div>
+          </div>
+          <p class="disclaimer">O código de classificação é o valor bruto gravado pelo app. O resultado oficial (ritmo sinusal, fibrilação atrial, inconclusivo etc.) fica disponível apenas dentro do app Samsung Health Monitor — este painel não faz interpretação diagnóstica de ECG.</p>
+        </div>
+
+        <div class="subsection" id="sec-scores">
+          <div class="subsection-head"><h2>🏆 Scores consolidados</h2></div>
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="panel-title"><h3>Heart Health Score</h3><span class="badge" id="hhsBadge">—</span></div>
+              <div class="chart-wrap short"><canvas id="hhsChart"></canvas></div>
+              <div id="hhsBreakdown" style="margin-top:12px;"></div>
+            </div>
+            <div class="card">
+              <div class="panel-title"><h3>Vitality Score</h3><span class="badge" id="vitBadge">—</span></div>
+              <div class="chart-wrap short"><canvas id="vitChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card section-gap" id="fitnessCard">
+            <div class="panel-title"><h3>Aptidão física (mais recente)</h3><span class="n" id="fitnessDate" style="color:var(--ink-faint);font-size:11px;"></span></div>
+            <div class="fitness-grid" id="fitnessGrid"></div>
+          </div>
         </div>
       </div>
 
@@ -269,6 +442,16 @@ License: MIT
           <div class="card">
             <div class="panel-title"><h3>Duração — dias de semana vs. fim de semana</h3></div>
             <div class="chart-wrap"><canvas id="sleepWeekendChart"></canvas></div>
+          </div>
+        </div>
+        <div class="grid cols-2 section-gap">
+          <div class="card">
+            <div class="panel-title"><h3>Ronco por noite</h3><span class="badge" id="snoreBadge">—</span></div>
+            <div class="chart-wrap"><canvas id="snoreChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="panel-title"><h3>Apneia do sono</h3></div>
+            <div id="apneaBox" style="color:var(--ink-dim);font-size:13px;line-height:1.6;"></div>
           </div>
         </div>
         <div class="card section-gap">
@@ -303,6 +486,10 @@ License: MIT
           </div>
         </div>
         <div class="card section-gap">
+          <div class="panel-title"><h3>FC média por tipo de atividade</h3></div>
+          <div class="chart-wrap"><canvas id="exTypeHrChart"></canvas></div>
+        </div>
+        <div class="card section-gap">
           <div class="panel-title"><h3>Sessões de exercício</h3><span class="badge" id="exCountBadge">—</span></div>
           <div style="max-height:340px;overflow:auto;">
             <table id="exTable"><thead><tr><th>Data</th><th>Tipo</th><th>Duração</th><th>Distância</th><th>Calorias</th><th>FC média</th><th>FC máx</th></tr></thead><tbody></tbody></table>
@@ -320,6 +507,16 @@ License: MIT
           <div class="card"><div class="panel-title"><h3>FC média diária</h3></div><div class="chart-wrap"><canvas id="evoHrChart"></canvas></div></div>
           <div class="card"><div class="panel-title"><h3>Frequência de exercícios por semana</h3></div><div class="chart-wrap"><canvas id="evoExChart"></canvas></div></div>
           <div class="card"><div class="panel-title"><h3>Estresse médio diário</h3></div><div class="chart-wrap"><canvas id="evoStressChart"></canvas></div></div>
+          <div class="card"><div class="panel-title"><h3>Pressão arterial (sistólica/diastólica)</h3></div><div class="chart-wrap"><canvas id="evoBpChart"></canvas></div></div>
+          <div class="card"><div class="panel-title"><h3>SpO2 médio diário</h3></div><div class="chart-wrap"><canvas id="evoSpo2Chart"></canvas></div></div>
+          <div class="card"><div class="panel-title"><h3>Água ingerida por dia</h3></div><div class="chart-wrap"><canvas id="evoWaterChart"></canvas></div></div>
+          <div class="card"><div class="panel-title"><h3>Andares subidos por dia</h3></div><div class="chart-wrap"><canvas id="evoFloorsChart"></canvas></div></div>
+          <div class="card"><div class="panel-title"><h3>Aptidão física (score geral)</h3></div><div class="chart-wrap"><canvas id="evoFitnessChart"></canvas></div></div>
+          <div class="card"><div class="panel-title"><h3>Humor registrado (escala do app, 1–5)</h3></div><div class="chart-wrap"><canvas id="evoMoodChart"></canvas></div></div>
+        </div>
+        <div class="card section-gap">
+          <div class="panel-title"><h3>Conquistas recentes</h3><span class="badge" id="badgeCountBadge">—</span></div>
+          <div class="badge-list" id="badgeList"></div>
         </div>
       </div>
 
@@ -349,12 +546,37 @@ License: MIT
             <p class="footer-note" id="crossStepsSleepNote" style="margin-top:10px;"></p>
           </div>
         </div>
+        <div class="grid cols-2 section-gap">
+          <div class="card">
+            <div class="panel-title"><h3>Dias com exercício x pressão sistólica nos dias seguintes</h3></div>
+            <div class="chart-wrap short"><canvas id="crossExBpChart"></canvas></div>
+            <p class="footer-note" id="crossExBpNote" style="margin-top:10px;"></p>
+          </div>
+          <div class="card">
+            <div class="panel-title"><h3>Duração do sono x HRV (RMSSD) do dia seguinte</h3></div>
+            <div class="chart-wrap short"><canvas id="crossSleepHrvChart"></canvas></div>
+            <p class="footer-note" id="crossSleepHrvNote" style="margin-top:10px;"></p>
+          </div>
+        </div>
+        <div class="grid cols-2 section-gap">
+          <div class="card">
+            <div class="panel-title"><h3>SpO2 médio x eficiência do sono na mesma noite</h3></div>
+            <div class="chart-wrap"><canvas id="crossSpo2SleepChart"></canvas></div>
+            <p class="footer-note" id="crossSpo2SleepNote" style="margin-top:10px;"></p>
+          </div>
+          <div class="card">
+            <div class="panel-title"><h3>Estresse médio x humor do mesmo dia</h3></div>
+            <div class="chart-wrap"><canvas id="crossStressMoodChart"></canvas></div>
+            <p class="footer-note" id="crossStressMoodNote" style="margin-top:10px;"></p>
+          </div>
+        </div>
         <div class="card section-gap">
           <div class="panel-title"><h3>Como ler estes cruzamentos</h3></div>
           <p style="color:var(--ink-dim);font-size:12.5px;line-height:1.6;margin:0;">
             Os coeficientes de correlação (r) variam de -1 a 1. Valores acima de 0,3 ou abaixo de -0,3 já indicam uma relação perceptível;
             acima de 0,5 (ou abaixo de -0,5), uma relação forte. Com poucos dias de dados, esses números ainda são instáveis — voltar aqui
-            depois de algumas semanas a mais de uso deixa os padrões mais confiáveis.
+            depois de algumas semanas a mais de uso deixa os padrões mais confiáveis. Estes cruzamentos sempre usam todo o histórico
+            disponível, independente do filtro de datas/atividades selecionado acima.
           </p>
         </div>
       </div>
@@ -367,12 +589,12 @@ License: MIT
 /* ================================================================
    NAVEGAÇÃO — registrada primeiro e de forma isolada, para que a
    troca de abas continue funcionando mesmo se algo mais abaixo
-   (parsing, gráficos, CDNs) falhar.
+   (parsing, gráficos) falhar.
    ================================================================ */
 const TITLES = {
   overview:['Painel geral','Visão consolidada de todos os seus dados de saúde'],
-  heart:['❤️ Coração','Frequência cardíaca ao longo do tempo'],
-  sleep:['😴 Sono','Estágios, regularidade e qualidade do sono'],
+  heart:['❤️ Coração','Frequência cardíaca, pressão, HRV, oxigenação e mais'],
+  sleep:['😴 Sono','Estágios, regularidade, ronco e qualidade do sono'],
   exercise:['🏃 Exercícios','Sessões, carga de treino e evolução'],
   evolution:['📊 Evolução','Todas as métricas lado a lado ao longo do tempo'],
   cross:['🔀 Cruzamentos','Como suas métricas de saúde se relacionam entre si'],
@@ -386,28 +608,55 @@ document.querySelectorAll('.nav-item').forEach(item=>{
     document.getElementById('page-'+page).classList.add('active');
     document.getElementById('pageTitle').textContent = TITLES[page][0];
     document.getElementById('pageSubtitle').textContent = TITLES[page][1];
+    window.scrollTo(0,0);
   });
 });
 
-/* Aviso caso as bibliotecas externas (CDN) não tenham carregado */
 window.addEventListener('load', () => {
   if (typeof Papa === 'undefined' || typeof Chart === 'undefined'){
     const banner = document.createElement('div');
     banner.style.cssText = 'background:#3a1f22;color:#ffb4bb;border:1px solid #ff5d6c;border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:12.5px;line-height:1.6;';
-    banner.innerHTML = '⚠️ Não foi possível carregar as bibliotecas de gráficos (Chart.js / PapaParse) via internet. As abas e a leitura de pasta continuam funcionando, mas os gráficos não vão aparecer. Verifique sua conexão com a internet ou um bloqueador de anúncios/firewall bloqueando <span class="mono">cdnjs.cloudflare.com</span>, e recarregue a página.';
+    banner.innerHTML = '⚠️ Não foi possível inicializar as bibliotecas de gráficos (Chart.js / PapaParse), que vêm embutidas neste arquivo. Tente recarregar a página.';
     document.getElementById('main').prepend(banner);
   }
 });
 
 /* ================================================================
-   PARSING — arquivos Samsung Health: linha 1 = metadado da tabela,
-   linha 2 = cabeçalho real, linha 3+ = dados.
+   TIPOS DE EXERCÍCIO (tabela oficial Samsung Health)
+   ================================================================ */
+const EXERCISE_TYPES = {
+  0:'Personalizado',1001:'Caminhada',1002:'Corrida',2001:'Beisebol',2002:'Softbol',2003:'Críquete',
+  3001:'Golfe',3002:'Bilhar',3003:'Boliche',4001:'Hóquei',4002:'Rugby',4003:'Basquete',4004:'Futebol',
+  4005:'Handebol',4006:'Futebol americano',5001:'Vôlei',5002:'Vôlei de praia',6001:'Squash',6002:'Tênis',
+  6003:'Badminton',6004:'Tênis de mesa',6005:'Raquetebol',7001:'Tai chi',7002:'Boxe',7003:'Artes marciais',
+  8001:'Balé',8002:'Dança',8003:'Dança de salão',9001:'Pilates',9002:'Ioga',10001:'Alongamento',
+  10002:'Pular corda',10003:'Bambolê',10004:'Flexões',10005:'Barra fixa',10006:'Abdominais',
+  10007:'Treino em circuito',10008:'Mountain climber',10009:'Polichinelo',10010:'Burpee',
+  10011:'Supino',10012:'Agachamento',10013:'Afundo (lunge)',10014:'Leg press',10015:'Extensora',
+  10016:'Flexora',10017:'Extensão lombar',10018:'Puxada (lat pulldown)',10019:'Levantamento terra',
+  10020:'Desenvolvimento de ombro',10021:'Elevação frontal',10022:'Elevação lateral',10023:'Crunch',
+  10024:'Elevação de pernas',10025:'Prancha',10026:'Rosca bíceps',10027:'Extensão de tríceps',
+  11001:'Patinação inline',11002:'Voo livre',11003:'Tiro esportivo',11004:'Arco e flecha',
+  11005:'Equitação',11007:'Ciclismo',11008:'Frisbee',11009:'Patinação',12001:'Aeróbica',
+  13001:'Trilha (hiking)',13002:'Escalada',13003:'Backpacking',13004:'Mountain bike',13005:'Orientação',
+  14001:'Natação',14002:'Hidroginástica',14003:'Canoagem',14004:'Vela',14005:'Mergulho',
+  14006:'Snorkeling',14007:'Caiaque',14008:'Kitesurf',14009:'Rafting',14010:'Remo (máquina, lazer)',
+  14011:'Windsurf',14012:'Iatismo',14013:'Esqui aquático',15001:'Step',15002:'Musculação (máquinas)',
+  15003:'Bicicleta ergométrica',15004:'Remo (máquina)',15005:'Esteira',15006:'Elíptico',
+  16001:'Esqui cross-country',16002:'Esqui downhill',16003:'Dança no gelo',16004:'Patinação no gelo',
+  16006:'Hóquei no gelo',16007:'Snowboard',16008:'Esqui alpino',16009:'Caminhada na neve',
+};
+function activityName(code){ return EXERCISE_TYPES[code] || `Atividade #${code}`; }
+
+/* ================================================================
+   ESTADO GLOBAL / FILTROS
    ================================================================ */
 const state = {
-  files: {},          // filename -> raw text
-  raw: {},             // logicalKey -> array of row objects
-  rangeDays: 99999,
-  charts: {},          // id -> Chart instance, so we can destroy on refresh
+  raw: {},              // logicalKey -> array of row objects
+  from: null,           // Date|null — início do filtro de período
+  to: null,             // Date|null — fim do filtro de período
+  activityFilter: null, // Set<number>|null — null = todos os tipos
+  charts: {},           // id -> Chart instance
 };
 
 const FILE_MATCHERS = [
@@ -421,14 +670,35 @@ const FILE_MATCHERS = [
   { key: 'oxygen',           test: n => /com\.samsung\.shealth\.tracker\.oxygen_saturation\.\d/.test(n) },
   { key: 'training_daily',   test: n => /com\.samsung\.shealth\.training_load\.daily\.\d/.test(n) },
   { key: 'hrv',              test: n => /com\.samsung\.health\.hrv\.\d/.test(n) },
+  // --- novidades desta versão ---
+  { key: 'blood_pressure',   test: n => /com\.samsung\.shealth\.blood_pressure\.\d/.test(n) },
+  { key: 'antioxidant',      test: n => /com\.samsung\.health\.antioxidant\.\d/.test(n) },
+  { key: 'age',              test: n => /com\.samsung\.health\.advanced_glycation_endproduct\.\d/.test(n) },
+  { key: 'respiratory',      test: n => /com\.samsung\.health\.respiratory_rate\.\d/.test(n) },
+  { key: 'skin_temp',        test: n => /com\.samsung\.health\.skin_temperature\.\d/.test(n) },
+  { key: 'ecg',              test: n => /com\.samsung\.health\.ecg\.\d/.test(n) },
+  { key: 'vitals_daily',     test: n => /com\.samsung\.shealth\.vitals\.daily\.\d/.test(n) },
+  { key: 'heart_score',      test: n => /com\.samsung\.shealth\.heart_health_score\.\d/.test(n) },
+  { key: 'vitality_score',   test: n => /com\.samsung\.shealth\.vitality_score\.\d/.test(n) },
+  { key: 'fitness_score',    test: n => /com\.samsung\.shealth\.physical_fitness_score\.\d/.test(n) },
+  { key: 'mood',             test: n => /com\.samsung\.shealth\.mood\.\d/.test(n) },
+  { key: 'snoring',          test: n => /com\.samsung\.shealth\.sleep_snoring\.\d/.test(n) },
+  { key: 'apnea',            test: n => /com\.samsung\.health\.sleep_apnea\.\d/.test(n) },
+  { key: 'floors',           test: n => /com\.samsung\.shealth\.tracker\.floors_day_summary\.\d/.test(n) },
+  { key: 'water',            test: n => /com\.samsung\.health\.water_intake\.\d/.test(n) },
+  { key: 'badge',            test: n => /com\.samsung\.shealth\.badge\.\d/.test(n) },
+];
+
+// arquivos JSON "binning_data" que guardam valores numéricos reais fora do CSV
+// (o Samsung Health só expõe HRV em ms dentro desses blobs)
+const JSON_DIRS = [
+  { dirTest: p => /\/jsons\/com\.samsung\.health\.hrv\//.test(p), key: 'hrv_json' },
 ];
 
 function shortenHeader(h){
-  // "com.samsung.health.heart_rate.heart_rate" -> "heart_rate"
   const parts = h.split('.');
   return parts[parts.length-1];
 }
-
 function parseShealthCSV(text){
   const parsed = Papa.parse(text, { skipEmptyLines: false });
   const rows = parsed.data;
@@ -439,9 +709,7 @@ function parseShealthCSV(text){
     const r = rows[i];
     if (!r || r.length < 2) continue;
     const obj = {};
-    for (let c=0;c<header.length;c++){
-      obj[header[c]] = r[c];
-    }
+    for (let c=0;c<header.length;c++){ obj[header[c]] = r[c]; }
     out.push(obj);
   }
   return out;
@@ -450,17 +718,21 @@ function parseShealthCSV(text){
 function toNum(v){ const n = parseFloat(v); return isNaN(n) ? null : n; }
 function toDate(v){
   if (!v) return null;
-  const d = new Date(v.replace(' ','T'));
+  const d = new Date(String(v).replace(' ','T'));
   if (isNaN(d.getTime())) return null;
-  // filtro de datas absurdas (goals/placeholders no export)
-  if (d.getFullYear() < 2015 || d.getTime() > Date.now() + 1000*60*60*24) return null;
+  if (d.getFullYear() < 2015 || d.getTime() > Date.now() + 1000*60*60*24*2) return null;
   return d;
 }
-function dayKey(d){ return d.toISOString().slice(0,10); }
+function dayKey(d){
+  // calendário LOCAL — toISOString() converte para UTC e, em fusos negativos
+  // (ex.: Brasil, UTC-3), jogaria eventos de noite para o dia seguinte
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
 function fmtHM(d){ return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
 function fmtDate(d){ return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}); }
-function fmtMin(mins){ const h=Math.floor(mins/60), m=Math.round(mins%60); return h>0? `${h}h${String(m).padStart(2,'0')}` : `${m}min`; }
-function mean(arr){ return arr.length? arr.reduce((a,b)=>a+b,0)/arr.length : null; }
+function fmtMin(mins){ if (mins==null||isNaN(mins)) return '—'; const h=Math.floor(mins/60), m=Math.round(mins%60); return h>0? `${h}h${String(m).padStart(2,'0')}` : `${m}min`; }
+function mean(arr){ const a=arr.filter(v=>v!=null && !isNaN(v)); return a.length? a.reduce((x,y)=>x+y,0)/a.length : null; }
 function pearson(xs, ys){
   const n = xs.length;
   if (n < 3) return null;
@@ -470,16 +742,38 @@ function pearson(xs, ys){
   const denom = Math.sqrt(dx2*dy2);
   return denom===0? null : num/denom;
 }
+function weekKey(d){ const dt=new Date(d); const day=(dt.getDay()+6)%7; dt.setDate(dt.getDate()-day); return fmtDate(dt); }
+function movingAvg(arr,n){
+  return arr.map((_,i)=>{ const s=Math.max(0,i-n+1); const slice=arr.slice(s,i+1).filter(x=>x!=null); return slice.length? +mean(slice).toFixed(0) : null; });
+}
+function groupByDay(arr, getDate, getVal){
+  const map = {};
+  arr.forEach(r=>{ const k = dayKey(getDate(r)); (map[k]=map[k]||[]).push(getVal(r)); });
+  const keys = Object.keys(map).sort();
+  return { labels: keys.map(k=>fmtDate(new Date(k))), keys, values: keys.map(k=>+mean(map[k]).toFixed(1)) };
+}
+function trendDirection(values){
+  if (values.length<10) return null;
+  const half = Math.floor(values.length/2);
+  const a = mean(values.slice(0,half)), b = mean(values.slice(half));
+  if (b>a+2) return 'subindo';
+  if (b<a-2) return 'caindo';
+  return 'estável';
+}
 
-const ACTIVITY_NAMES = {
-  1001:'Caminhada', 1002:'Caminhada em esteira', 11007:'Corrida', 1003:'Corrida',
-  13001:'Ciclismo', 14001:'Natação', 15008:'Musculação', 93001:'Outro exercício',
-  10001:'Corrida', 64001:'Yoga', 15015:'Treino funcional'
-};
-function activityName(code){ return ACTIVITY_NAMES[code] || `Atividade #${code}`; }
+// classificação de pressão arterial (referência AHA 2017 — não é diagnóstico)
+function bpCategory(sys, dia){
+  if (sys==null || dia==null) return {label:'—', color:'#8996a5'};
+  if (sys>=180 || dia>=120) return {label:'Crise hipertensiva', color:'#ff2d55'};
+  if (sys>=140 || dia>=90)  return {label:'Hipertensão estágio 2', color:'#ff5d6c'};
+  if (sys>=130 || dia>=80)  return {label:'Hipertensão estágio 1', color:'#ffb84e'};
+  if (sys>=120 && dia<80)   return {label:'Elevada', color:'#ffd93d'};
+  if (sys<120 && dia<80)    return {label:'Normal', color:'#4ee6a0'};
+  return {label:'—', color:'#8996a5'};
+}
 
 /* ================================================================
-   CARREGAMENTO DE ARQUIVOS
+   CARREGAMENTO DE ARQUIVOS (inclui subpasta jsons/ para HRV real)
    ================================================================ */
 const fileInput = document.getElementById('fileInput');
 document.getElementById('pickBtn').onclick = () => fileInput.click();
@@ -488,24 +782,34 @@ document.getElementById('pickBtn2').onclick = () => fileInput.click();
 fileInput.addEventListener('change', async (e) => {
   try {
     if (typeof Papa === 'undefined'){
-      alert('As bibliotecas necessárias não carregaram (sem internet ou bloqueadas por firewall/ad-blocker). Verifique a conexão e recarregue a página.');
+      alert('As bibliotecas internas não carregaram corretamente. Recarregue a página e tente novamente.');
       return;
     }
-    const files = Array.from(e.target.files).filter(f => f.name.endsWith('.csv'));
-    if (!files.length){ alert('Nenhum arquivo .csv encontrado nessa pasta.'); return; }
-    setStatus('carregando ' + files.length + ' arquivos…', false);
+    const allFiles = Array.from(e.target.files);
+    const csvFiles = allFiles.filter(f => f.name.endsWith('.csv'));
+    const jsonFiles = allFiles.filter(f => f.name.endsWith('.json'));
+    if (!csvFiles.length){ alert('Nenhum arquivo .csv encontrado nessa pasta. Selecione a pasta exportada do Samsung Health (contém os arquivos com.samsung.*.csv).'); return; }
+    setStatus('carregando ' + csvFiles.length + ' arquivos…', false);
+
     state.raw = {};
-    for (const f of files){
+    for (const f of csvFiles){
       const matcher = FILE_MATCHERS.find(m => m.test(f.name));
       if (!matcher) continue;
       try {
         const text = await f.text();
         state.raw[matcher.key] = parseShealthCSV(text);
-      } catch (errFile) {
-        console.error('Falha ao ler', f.name, errFile);
-      }
+      } catch (errFile) { console.error('Falha ao ler', f.name, errFile); }
     }
+
+    // HRV real: lê os blobs binning_data.json referenciados pelo CSV de HRV
+    state.hrvJson = {};
+    const hrvRelated = jsonFiles.filter(f => JSON_DIRS[0].dirTest(f.webkitRelativePath||'') && f.name.endsWith('.binning_data.json'));
+    await Promise.all(hrvRelated.map(f => f.text().then(t=>{
+      try { state.hrvJson[f.name] = JSON.parse(t); } catch(e){ /* ignora blob inválido */ }
+    }).catch(()=>{})));
+
     buildDerivedData();
+    populateActivityFilter();
     setStatus('dados carregados · ' + new Date().toLocaleTimeString('pt-BR'), true);
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('content').style.display = 'block';
@@ -513,13 +817,8 @@ fileInput.addEventListener('change', async (e) => {
   } catch (err) {
     console.error(err);
     setStatus('erro ao carregar dados', false);
-    alert('Ocorreu um erro ao processar os arquivos: ' + err.message + '\n\nAs abas continuam funcionando normalmente.');
+    alert('Ocorreu um erro ao processar os arquivos: ' + err.message);
   }
-});
-
-document.getElementById('rangeSelect').addEventListener('change', (e)=>{
-  state.rangeDays = parseInt(e.target.value,10);
-  renderAll();
 });
 
 function setStatus(text, ok){
@@ -527,34 +826,42 @@ function setStatus(text, ok){
   document.getElementById('statusPill').classList.toggle('ok', !!ok);
 }
 
+function filterByRange(arr, getDate){
+  return arr.filter(x=>{
+    const d = getDate(x);
+    if (!d) return false;
+    if (state.from && d < state.from) return false;
+    if (state.to && d > state.to) return false;
+    return true;
+  });
+}
+function filterExercise(arr){
+  const byRange = filterByRange(arr, r=>r.start);
+  if (!state.activityFilter) return byRange;
+  return byRange.filter(e => state.activityFilter.has(e.type));
+}
+
 /* ================================================================
    DADOS DERIVADOS
    ================================================================ */
-let D = {}; // derived
+let D = {};
 
 function buildDerivedData(){
   D = {};
 
-  // ---- Heart rate raw points ----
-  D.hr = (state.raw.heart_rate || []).map(r => ({
-    t: toDate(r.start_time), v: toNum(r.heart_rate)
-  })).filter(r => r.t && r.v && r.v > 25 && r.v < 230)
-    .sort((a,b)=>a.t-b.t);
+  D.hr = (state.raw.heart_rate || []).map(r => ({ t: toDate(r.start_time), v: toNum(r.heart_rate) }))
+    .filter(r => r.t && r.v && r.v > 25 && r.v < 230).sort((a,b)=>a.t-b.t);
 
-  // ---- Steps per day ----
   D.steps = (state.raw.pedometer_day || []).map(r => ({
     t: toDate(r.day_time), steps: toNum(r.step_count), distance: toNum(r.distance), calorie: toNum(r.calorie)
   })).filter(r=>r.t).sort((a,b)=>a.t-b.t);
 
-  // ---- Weight ----
   D.weight = (state.raw.weight || []).map(r => ({ t: toDate(r.start_time), v: toNum(r.weight) }))
     .filter(r=>r.t && r.v).sort((a,b)=>a.t-b.t);
 
-  // ---- Stress ----
   D.stress = (state.raw.stress || []).map(r => ({ t: toDate(r.start_time), v: toNum(r.score) }))
     .filter(r=>r.t && r.v!=null && r.v>0).sort((a,b)=>a.t-b.t);
 
-  // ---- Exercise sessions ----
   D.exercise = (state.raw.exercise || []).map(r => ({
     start: toDate(r.start_time), end: toDate(r.end_time),
     durMin: toNum(r.duration) ? toNum(r.duration)/60000 : null,
@@ -564,27 +871,25 @@ function buildDerivedData(){
     type: toNum(r.exercise_type)
   })).filter(r=>r.start).sort((a,b)=>a.start-b.start);
 
-  // ---- Training load daily ----
   D.trainingLoad = (state.raw.training_daily || []).map(r => ({
     t: toDate(r.time), acute: toNum(r.acute_training_load), chronic: toNum(r.chronic_training_load)
   })).filter(r=>r.t).sort((a,b)=>a.t-b.t);
 
-  // ---- Sleep: group sleep_stage rows by sleep_id ----
+  // ---- Sono: agrupa sleep_stage por sleep_id ----
   const stageRows = (state.raw.sleep_stage || []).map(r => ({
     id: r.sleep_id, stage: toNum(r.stage), start: toDate(r.start_time), end: toDate(r.end_time)
   })).filter(r => r.id && r.start && r.end);
-
   const sessions = {};
-  for (const r of stageRows){
-    if (!sessions[r.id]) sessions[r.id] = { id:r.id, segs:[] };
-    sessions[r.id].segs.push(r);
-  }
-  const STAGE = { 40001:'awake', 40002:'light', 40003:'rem', 40004:'deep' };
+  for (const r of stageRows){ (sessions[r.id] = sessions[r.id] || {id:r.id, segs:[]}).segs.push(r); }
+  // Códigos verificados empiricamente nos dados reais (distribuição ao longo da noite:
+  // sono profundo concentra-se na 1ª metade da noite, REM aumenta perto do fim) —
+  // 40003 = profundo, 40004 = REM.
+  const STAGE = { 40001:'awake', 40002:'light', 40003:'deep', 40004:'rem' };
   D.sleep = Object.values(sessions).map(s => {
     const segs = s.segs.sort((a,b)=>a.start-b.start);
     const bedtime = segs[0].start, wake = segs[segs.length-1].end;
     const durMin = (wake - bedtime)/60000;
-    if (durMin < 45 || durMin > 20*60) return null; // filtra cochilos curtíssimos e ruído
+    if (durMin < 45 || durMin > 20*60) return null;
     const mins = { light:0, deep:0, rem:0, awake:0 };
     let awakenings = 0;
     segs.forEach((seg,i)=>{
@@ -593,14 +898,113 @@ function buildDerivedData(){
       if (key) mins[key] += m;
       if (key === 'awake' && i>0 && i<segs.length-1) awakenings++;
     });
-    return { bedtime, wake, durMin, mins, awakenings, night: dayKey(wake) };
+    return { bedtime, wake, durMin, mins, awakenings, night: dayKey(wake), snoreMin:0, snoreEvents:0 };
   }).filter(Boolean).sort((a,b)=>a.bedtime-b.bedtime);
+
+  // ---- Ronco: soma por noite (encaixa cada evento na sessão de sono correspondente) ----
+  D.snoringRaw = (state.raw.snoring || []).map(r=>({
+    start: toDate(r.start_time), end: toDate(r.end_time), durMin: toNum(r.duration)!=null ? toNum(r.duration)/60000 : 0
+  })).filter(r=>r.start);
+  D.snoringRaw.forEach(ev=>{
+    const night = D.sleep.find(s => ev.start >= s.bedtime && ev.start <= s.wake);
+    if (night && ev.durMin>0){ night.snoreMin += ev.durMin; night.snoreEvents += 1; }
+  });
+
+  // ---- Apneia ----
+  D.apnea = (state.raw.apnea || []).map(r=>({
+    t: toDate(r.start_time), result: toNum(r.result), avgBd: toNum(r.average_bd)
+  })).filter(r=>r.t).sort((a,b)=>a.t-b.t);
+
+  // ---- Pressão arterial ----
+  D.bp = (state.raw.blood_pressure || []).map(r=>{
+    const sys = toNum(r.systolic), dia = toNum(r.diastolic);
+    return {
+      t: toDate(r.start_time), sys, dia, pulse: toNum(r.pulse),
+      map: (sys!=null && dia!=null) ? (sys + 2*dia)/3 : null,
+      cat: bpCategory(sys, dia),
+    };
+  }).filter(r=>r.t && r.sys && r.dia).sort((a,b)=>a.t-b.t);
+
+  // ---- HRV real (lê os JSONs binning_data referenciados) ----
+  D.hrv = (state.raw.hrv || []).map(r=>{
+    const blob = r.binning_data && state.hrvJson ? state.hrvJson[r.binning_data] : null;
+    if (!blob || !blob.length) return null;
+    const rmssd = mean(blob.map(b=>b.rmssd));
+    const sdnn = mean(blob.map(b=>b.sdnn));
+    const t = toDate(r.end_time) || toDate(r.start_time);
+    if (!t || rmssd==null) return null;
+    return { t, rmssd:+rmssd.toFixed(1), sdnn: sdnn!=null?+sdnn.toFixed(1):null };
+  }).filter(Boolean).sort((a,b)=>a.t-b.t);
+  D.hrvAvailable = (state.raw.hrv||[]).length > 0;
+  D.hrvResolved = D.hrv.length > 0;
+
+  // ---- SpO2 (por leitura) ----
+  D.spo2 = (state.raw.oxygen || []).map(r=>({ t: toDate(r.start_time), v: toNum(r.spo2), hr: toNum(r.heart_rate) }))
+    .filter(r=>r.t && r.v).sort((a,b)=>a.t-b.t);
+
+  // ---- Respiração ----
+  D.resp = (state.raw.respiratory || []).map(r=>({ t: toDate(r.start_time), v: toNum(r.average) }))
+    .filter(r=>r.t && r.v).sort((a,b)=>a.t-b.t);
+
+  // ---- Temperatura de pele ----
+  D.skinTemp = (state.raw.skin_temp || []).map(r=>({ t: toDate(r.start_time), v: toNum(r.temperature), baseline: toNum(r.baseline) }))
+    .filter(r=>r.t && r.v).sort((a,b)=>a.t-b.t);
+
+  // ---- Antioxidante ----
+  D.antioxidant = (state.raw.antioxidant || []).map(r=>({ t: toDate(r.start_time), v: toNum(r.antioxidant) }))
+    .filter(r=>r.t && r.v!=null).sort((a,b)=>a.t-b.t);
+
+  // ---- AGE (glicação) ----
+  D.age = (state.raw.age || []).map(r=>({ t: toDate(r.day_time), percent: toNum(r.percent), score: toNum(r.score) }))
+    .filter(r=>r.t && r.percent!=null).sort((a,b)=>a.t-b.t);
+
+  // ---- ECG ----
+  D.ecg = (state.raw.ecg || []).map(r=>({
+    t: toDate(r.start_time), meanHr: toNum(r.mean_heart_rate), samples: toNum(r.sample_count), classification: r.classification
+  })).filter(r=>r.t).sort((a,b)=>b.t-a.t);
+
+  // ---- Vitais consolidados do dia ----
+  D.vitalsDaily = (state.raw.vitals_daily || []).map(r=>({
+    t: toDate(r.day_time), spo2: toNum(r.spo2_average), resp: toNum(r.respiratory_rate_average),
+    skinTemp: toNum(r.skin_temp_average), shrv: toNum(r.shrv_average), shr: toNum(r.shr_average)
+  })).filter(r=>r.t).sort((a,b)=>a.t-b.t);
+
+  // ---- Scores ----
+  D.heartScore = (state.raw.heart_score || []).map(r=>({
+    t: toDate(r.day_time), total: toNum(r.total_score), exercise: toNum(r.exercise_score),
+    sleep: toNum(r.sleep_score), bmi: toNum(r.body_mass_index_score), map: toNum(r.mean_arterial_pressure_score)
+  })).filter(r=>r.t).sort((a,b)=>a.t-b.t);
+
+  D.vitalityScore = (state.raw.vitality_score || []).map(r=>({
+    t: toDate(r.day_time), total: toNum(r.total_score), activity: toNum(r.activity_score),
+    sleep: toNum(r.sleep_score), shr: toNum(r.shr_score), shrv: toNum(r.shrv_score)
+  })).filter(r=>r.t).sort((a,b)=>a.t-b.t);
+
+  D.fitnessScore = (state.raw.fitness_score || []).map(r=>({
+    t: toDate(r.create_time), total: toNum(r.afs_agg), flexibility: toNum(r.flexibility_agg),
+    strength: toNum(r.strength_agg), cardio: toNum(r.cardiorespiratory_agg),
+    endurance: toNum(r.endurance_agg), body: toNum(r.body_composition_agg)
+  })).filter(r=>r.t).sort((a,b)=>a.t-b.t);
+
+  // ---- Humor (escala bruta 1–5 do app, sem reinterpretação) ----
+  D.mood = (state.raw.mood || []).map(r=>({ t: toDate(r.start_time), v: toNum(r.mood_type) }))
+    .filter(r=>r.t && r.v!=null).sort((a,b)=>a.t-b.t);
+
+  // ---- Água ----
+  D.water = (state.raw.water || []).map(r=>({ t: toDate(r.start_time), ml: toNum(r.amount) }))
+    .filter(r=>r.t && r.ml).sort((a,b)=>a.t-b.t);
+
+  // ---- Andares subidos (resumo diário) ----
+  D.floors = (state.raw.floors || []).map(r=>({ t: toDate(r.day_time), count: toNum(r.floor_count) }))
+    .filter(r=>r.t).sort((a,b)=>a.t-b.t);
+
+  // ---- Conquistas ----
+  D.badges = (state.raw.badge || []).map(r=>({ t: toDate(r.start_time), key: r.key, status: r.status }))
+    .filter(r=>r.t && r.key).sort((a,b)=>b.t-a.t);
 }
 
-function filterByRange(arr, getDate){
-  if (state.rangeDays >= 99999) return arr;
-  const cutoff = Date.now() - state.rangeDays*24*3600*1000;
-  return arr.filter(x => getDate(x).getTime() >= cutoff);
+function prettyBadge(key){
+  return key.replace(/_/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
 }
 
 /* ================================================================
@@ -622,7 +1026,7 @@ function lineChart(id, labels, datasets, opts={}){
   state.charts[id] = new Chart(ctx, {
     type:'line',
     data:{ labels, datasets: datasets.map(ds=>({
-      tension:.35, pointRadius: ds.points===false?0:2, pointHoverRadius:4, borderWidth:2, fill: !!ds.fill,
+      tension:.35, pointRadius: ds.points===false?0:2, pointHoverRadius:4, borderWidth:2, fill: !!ds.fill, spanGaps:true,
       ...ds
     })) },
     options:{ responsive:true, maintainAspectRatio:false,
@@ -666,9 +1070,97 @@ function scatterChart(id, datasets, opts={}){
 function kpiCard(label, value, unit, sub, color){
   return `<div class="card kpi"><div class="label">${label}</div><div class="value" style="color:${color||'var(--ink)'}">${value}${unit?`<small>${unit}</small>`:''}</div>${sub?`<div class="sub">${sub}</div>`:''}</div>`;
 }
+function emptyKpi(msg){ return kpiCard('Sem dados','—','',msg); }
 
 /* ================================================================
-   RENDER — chamada sempre que dados ou filtro mudam
+   FILTRO DE PERÍODO — chips rápidos + calendário (inputs nativos)
+   ================================================================ */
+const dateFromEl = document.getElementById('dateFrom');
+const dateToEl = document.getElementById('dateTo');
+
+function setActiveChip(days){
+  document.querySelectorAll('#rangeChips .chip').forEach(c=>c.classList.toggle('active', c.dataset.days===String(days)));
+}
+function isoDate(d){
+  // usa o calendário LOCAL (não toISOString, que converte para UTC e pode
+  // "pular" um dia para fusos horários negativos, como o do Brasil)
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+
+document.querySelectorAll('#rangeChips .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    const days = parseInt(chip.dataset.days,10);
+    if (days >= 99999){
+      state.from = null; state.to = null;
+      dateFromEl.value = ''; dateToEl.value = '';
+    } else {
+      const to = new Date(); to.setHours(23,59,59,999);
+      const from = new Date(); from.setHours(0,0,0,0); from.setDate(from.getDate()-days);
+      state.from = from; state.to = to;
+      dateFromEl.value = isoDate(from); dateToEl.value = isoDate(to);
+    }
+    setActiveChip(days);
+    renderAll();
+  });
+});
+function syncDateInputs(){
+  setActiveChip(99999); // nenhum chip ativo ao digitar manualmente (menos "Tudo")
+  document.querySelectorAll('#rangeChips .chip').forEach(c=>c.classList.remove('active'));
+  const from = dateFromEl.value ? new Date(dateFromEl.value+'T00:00:00') : null;
+  const to = dateToEl.value ? new Date(dateToEl.value+'T23:59:59') : null;
+  state.from = from; state.to = to;
+  renderAll();
+}
+dateFromEl.addEventListener('change', syncDateInputs);
+dateToEl.addEventListener('change', syncDateInputs);
+
+/* ================================================================
+   FILTRO DE TIPOS DE ATIVIDADE (multi-select)
+   ================================================================ */
+const mselBtn = document.getElementById('activityMselBtn');
+const mselPanel = document.getElementById('activityMselPanel');
+mselBtn.addEventListener('click', (e)=>{ e.stopPropagation(); mselPanel.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if (!document.getElementById('activityMsel').contains(e.target)) mselPanel.classList.remove('open'); });
+
+function populateActivityFilter(){
+  const counts = {};
+  (D.exercise||[]).forEach(e=>{ counts[e.type] = (counts[e.type]||0)+1; });
+  const types = Object.keys(counts).map(Number).sort((a,b)=>counts[b]-counts[a]);
+  state.activityFilter = new Set(types); // começa com todos marcados
+
+  const list = document.getElementById('activityMselList');
+  list.innerHTML = types.map(t=>`
+    <label class="msel-row"><input type="checkbox" value="${t}" checked> ${activityName(t)} <span style="margin-left:auto;color:var(--ink-faint);font-size:11px;">${counts[t]}</span></label>
+  `).join('') || '<div style="color:var(--ink-faint);font-size:12px;padding:6px;">Nenhuma sessão de exercício encontrada.</div>';
+
+  list.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const t = Number(cb.value);
+      if (cb.checked) state.activityFilter.add(t); else state.activityFilter.delete(t);
+      updateActivityCount(types.length);
+      renderAll();
+    });
+  });
+  document.getElementById('actSelAll').onclick = ()=>{
+    state.activityFilter = new Set(types);
+    list.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=true);
+    updateActivityCount(types.length); renderAll();
+  };
+  document.getElementById('actSelNone').onclick = ()=>{
+    state.activityFilter = new Set();
+    list.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+    updateActivityCount(types.length); renderAll();
+  };
+  updateActivityCount(types.length);
+}
+function updateActivityCount(total){
+  const n = state.activityFilter.size;
+  document.getElementById('activityMselCount').textContent = (n===total) ? 'todas' : `${n}/${total}`;
+}
+
+/* ================================================================
+   RENDER — chamada sempre que dados ou filtros mudam
    ================================================================ */
 function renderAll(){
   const steps = [renderOverview, renderHeart, renderSleep, renderExercise, renderEvolution, renderCross];
@@ -677,12 +1169,23 @@ function renderAll(){
   }
 }
 
+function groupSumByDay(arr, getDate, getVal){
+  const map = {};
+  arr.forEach(r=>{ const k = dayKey(getDate(r)); map[k] = (map[k]||0) + (getVal(r)||0); });
+  const keys = Object.keys(map).sort();
+  return { labels: keys.map(k=>fmtDate(new Date(k))), keys, values: keys.map(k=>+map[k].toFixed(0)) };
+}
+
 /* ---------------- OVERVIEW ---------------- */
 function renderOverview(){
   const hr = filterByRange(D.hr, r=>r.t);
   const sleep = filterByRange(D.sleep, r=>r.wake);
   const steps = filterByRange(D.steps, r=>r.t);
-  const weight = D.weight; // sempre período completo, é lento de mudar
+  const weight = D.weight;
+  const bp = filterByRange(D.bp, r=>r.t);
+  const spo2 = filterByRange(D.spo2, r=>r.t);
+  const stress = filterByRange(D.stress, r=>r.t);
+  const heartScore = filterByRange(D.heartScore, r=>r.t);
 
   const avgHr = mean(hr.map(r=>r.v));
   const avgSleep = mean(sleep.map(r=>r.durMin));
@@ -698,13 +1201,23 @@ function renderOverview(){
     kpiCard('Peso atual', lastWeight? lastWeight.toFixed(1):'—','kg', weightDelta!=null? `${weightDelta>=0?'+':''}${weightDelta.toFixed(1)} kg no período`:'sem dados','var(--evo)'),
   ].join('');
 
-  // HR over time (daily avg)
+  const lastBp = bp.length? bp[bp.length-1] : null;
+  const avgSpo2 = mean(spo2.map(r=>r.v));
+  const avgStress = mean(stress.map(r=>r.v));
+  const lastScore = heartScore.length? heartScore[heartScore.length-1] : null;
+  document.getElementById('ovKpis2').innerHTML = [
+    kpiCard('Pressão arterial (última)', lastBp? `${lastBp.sys.toFixed(0)}/${lastBp.dia.toFixed(0)}`:'—','mmHg', lastBp? lastBp.cat.label:'sem dados', lastBp?lastBp.cat.color:null),
+    kpiCard('SpO2 médio', avgSpo2? avgSpo2.toFixed(0):'—','%', spo2.length?`${spo2.length} leituras`:'sem dados','var(--sleep)'),
+    kpiCard('Estresse médio', avgStress? avgStress.toFixed(0):'—','/100','','var(--cross)'),
+    kpiCard('Heart Health Score', lastScore&&lastScore.total!=null? lastScore.total.toFixed(0):'—','/100', lastScore?fmtDate(lastScore.t):'sem dados','var(--heart)'),
+  ].join('');
+
   const hrByDay = groupByDay(hr, r=>r.t, r=>r.v);
   document.getElementById('ovHrBadge').textContent = hrByDay.labels.length + ' dias';
   lineChart('ovHrChart', hrByDay.labels, [{label:'FC média',data:hrByDay.values,borderColor:'#ff5d6c',backgroundColor:'#ff5d6c22',fill:true,points:false}]);
 
   document.getElementById('ovSleepBadge').textContent = sleep.length + ' noites';
-  lineChart('ovSleepChart', sleep.map(s=>fmtDate(s.wake)), [{label:'Duração (min)',data:sleep.map(s=>+ (s.durMin/60).toFixed(2)),borderColor:'#5db8ff',backgroundColor:'#5db8ff22',fill:true,points:false}], {y:{title:{display:true,text:'horas'}}});
+  lineChart('ovSleepChart', sleep.map(s=>fmtDate(s.wake)), [{label:'Duração (h)',data:sleep.map(s=>+(s.durMin/60).toFixed(2)),borderColor:'#5db8ff',backgroundColor:'#5db8ff22',fill:true,points:false}], {y:{title:{display:true,text:'horas'}}});
 
   document.getElementById('ovStepsBadge').textContent = steps.length + ' dias';
   barChart('ovStepsChart', steps.map(s=>fmtDate(s.t)), [{label:'Passos',data:steps.map(s=>s.steps),backgroundColor:'#4ee6a099',borderRadius:4}]);
@@ -712,11 +1225,10 @@ function renderOverview(){
   document.getElementById('ovWeightBadge').textContent = weight.length + ' registros';
   lineChart('ovWeightChart', weight.map(w=>fmtDate(w.t)), [{label:'Peso (kg)',data:weight.map(w=>w.v),borderColor:'#ffb84e',backgroundColor:'#ffb84e22',fill:true,points:true}]);
 
-  // Findings
   const findings = [];
   if (sleep.length>3){
     const short = sleep.filter(s=>s.durMin<390);
-    if (short.length) findings.push({icon:'😴', title:`${short.length} noites com menos de 6h30 de sono`, text:'Veja a página Cruzamentos para o impacto disso na sua FC do dia seguinte.'});
+    if (short.length) findings.push({icon:'😴', title:`${short.length} noites com menos de 6h30 de sono`, text:'Veja a página Cruzamentos para o impacto disso na sua FC e HRV do dia seguinte.'});
   }
   if (D.exercise.length){
     const last30 = D.exercise.filter(e=> (Date.now()-e.start.getTime()) < 30*24*3600*1000);
@@ -726,7 +1238,10 @@ function renderOverview(){
     const restingTrend = D.hr.length>50 ? trendDirection(groupByDay(D.hr,r=>r.t,r=>r.v).values) : null;
     findings.push({icon:'❤️', title:`FC média geral: ${avgHr.toFixed(0)} bpm`, text: restingTrend? `Tendência recente: ${restingTrend}.` : 'Acompanhe a página Coração para detalhes.'});
   }
-  if (weightDelta!=null){
+  if (bp.length>=3){
+    const highBp = bp.filter(b=>b.sys>=130 || b.dia>=80);
+    findings.push({icon:'🩸', title:`${highBp.length} de ${bp.length} medições de pressão acima de 130/80`, text:'Veja a página Coração para a evolução completa e a classificação de cada leitura.'});
+  } else if (weightDelta!=null){
     findings.push({icon:'⚖️', title:`Peso ${weightDelta>=0?'subiu':'caiu'} ${Math.abs(weightDelta).toFixed(1)} kg`, text:'no período selecionado, com base no primeiro e último registro.'});
   }
   document.getElementById('ovFindings').innerHTML = findings.map(f=>`
@@ -734,42 +1249,37 @@ function renderOverview(){
   `).join('') || '<p style="color:var(--ink-faint);font-size:12.5px;">Carregue mais dados para ver destaques automáticos.</p>';
 }
 
-function groupByDay(arr, getDate, getVal){
-  const map = {};
-  arr.forEach(r=>{ const k = dayKey(getDate(r)); (map[k]=map[k]||[]).push(getVal(r)); });
-  const keys = Object.keys(map).sort();
-  return { labels: keys.map(k=>fmtDate(new Date(k))), keys, values: keys.map(k=>+mean(map[k]).toFixed(1)) };
-}
-function trendDirection(values){
-  if (values.length<10) return null;
-  const half = Math.floor(values.length/2);
-  const a = mean(values.slice(0,half)), b = mean(values.slice(half));
-  if (b>a+2) return 'subindo';
-  if (b<a-2) return 'caindo';
-  return 'estável';
-}
-
 /* ---------------- HEART ---------------- */
 function renderHeart(){
+  renderHeartCore();
+  renderHeartBp();
+  renderHeartHrv();
+  renderHeartO2Resp();
+  renderHeartTemp();
+  renderHeartAgeAntiox();
+  renderHeartEcg();
+  renderHeartScores();
+}
+
+function renderHeartCore(){
   const hr = filterByRange(D.hr, r=>r.t);
   if (!hr.length){
-    document.getElementById('heartKpis').innerHTML = kpiCard('Sem dados','—','','Nenhuma leitura de FC encontrada.');
+    document.getElementById('heartKpis').innerHTML = emptyKpi('Nenhuma leitura de FC encontrada.');
+    killChart('heartDayChart'); killChart('heartRestingChart'); killChart('heartHourChart'); killChart('heartWeekdayChart');
     return;
   }
   const vals = hr.map(r=>r.v);
   const byDay = groupByDay(hr, r=>r.t, r=>r.v);
   const restingByDay = {};
   hr.forEach(r=>{ const k=dayKey(r.t); restingByDay[k] = Math.min(restingByDay[k]??999, r.v); });
-  const restingVals = Object.values(restingByDay);
 
   document.getElementById('heartKpis').innerHTML = [
-    kpiCard('FC média','+'.replace('+','')+mean(vals).toFixed(0),'bpm', `${vals.length.toLocaleString('pt-BR')} leituras`,'var(--heart)'),
+    kpiCard('FC média', mean(vals).toFixed(0),'bpm', `${vals.length.toLocaleString('pt-BR')} leituras`,'var(--heart)'),
     kpiCard('FC mínima', Math.min(...vals).toFixed(0),'bpm','no período','var(--heart)'),
     kpiCard('FC máxima', Math.max(...vals).toFixed(0),'bpm','no período','var(--heart)'),
-    kpiCard('FC repouso (média dos mínimos diários)', mean(restingVals).toFixed(0),'bpm',`${restingVals.length} dias`,'var(--heart)'),
+    kpiCard('FC repouso (média dos mínimos diários)', mean(Object.values(restingByDay)).toFixed(0),'bpm',`${Object.keys(restingByDay).length} dias`,'var(--heart)'),
   ].join('');
 
-  // day selector
   const days = [...new Set(hr.map(r=>dayKey(r.t)))].sort().reverse();
   const sel = document.getElementById('heartDaySelect');
   const prevVal = sel.value;
@@ -778,52 +1288,178 @@ function renderHeart(){
   sel.onchange = () => renderHeartDay(sel.value);
   renderHeartDay(sel.value || days[0]);
 
-  // resting HR evolution
   lineChart('heartRestingChart', byDay.labels, [{label:'FC mínima diária',data: Object.keys(restingByDay).sort().map(k=>restingByDay[k]),borderColor:'#ff5d6c',backgroundColor:'#ff5d6c22',fill:true,points:false}]);
 
-  // distribution by hour
   const hourBuckets = Array.from({length:24},()=>[]);
   hr.forEach(r=>hourBuckets[r.t.getHours()].push(r.v));
   barChart('heartHourChart', Array.from({length:24},(_,h)=>h+'h'), [{label:'FC média',data:hourBuckets.map(b=>b.length?+mean(b).toFixed(0):0),backgroundColor:'#ff5d6c99',borderRadius:4}]);
 
-  // weekday
   const wdNames=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const wdBuckets = Array.from({length:7},()=>[]);
   hr.forEach(r=>wdBuckets[r.t.getDay()].push(r.v));
   barChart('heartWeekdayChart', wdNames, [{label:'FC média',data:wdBuckets.map(b=>b.length?+mean(b).toFixed(0):0),backgroundColor:'#ff5d6c99',borderRadius:4}]);
 
-  // episodes: HR > 100 outside exercise windows (simple heuristic)
   const exWindows = D.exercise.map(e=>[e.start.getTime(), (e.end||e.start).getTime()]);
   const episodes = hr.filter(r=> r.v>100 && !exWindows.some(([s,e])=> r.t.getTime()>=s-600000 && r.t.getTime()<=e+600000));
   document.getElementById('heartEpBadge').textContent = episodes.length + ' ocorrências';
   const tb = document.querySelector('#heartEpTable tbody');
   tb.innerHTML = episodes.slice(-200).reverse().map(e=>`<tr><td>${fmtDate(e.t)}</td><td>${fmtHM(e.t)}</td><td style="color:var(--heart)">${e.v.toFixed(0)}</td></tr>`).join('') || '<tr><td colspan="3" style="color:var(--ink-faint)">Nenhum episódio acima de 100 bpm fora de exercícios.</td></tr>';
-
-  // HRV
-  const hrvRows = state.raw.hrv || [];
-  const hrvEl = document.getElementById('hrvContent');
-  if (!hrvRows.length){
-    hrvEl.innerHTML = 'Nenhum registro de HRV encontrado no export.';
-  } else {
-    hrvEl.innerHTML = `Encontramos ${hrvRows.length} registros de HRV, mas o Samsung Health guarda os valores numéricos em arquivos binários (<span class="mono">binning_data</span>) que não vêm no export em CSV — só o app oficial consegue ler esse detalhe. Se seu relógio expõe HRV em ms (SDNN/RMSSD) em algum outro CSV do seu aparelho, me avise o nome do arquivo e eu incluo aqui.`;
-  }
 }
-
 function renderHeartDay(dayStr){
   if (!dayStr) return;
   const pts = D.hr.filter(r=>dayKey(r.t)===dayStr);
   lineChart('heartDayChart', pts.map(r=>fmtHM(r.t)), [{label:'FC (bpm)',data:pts.map(r=>r.v),borderColor:'#ff5d6c',backgroundColor:'#ff5d6c22',fill:true,points:false}]);
 }
 
+function renderHeartBp(){
+  const bp = filterByRange(D.bp, r=>r.t);
+  if (!bp.length){
+    document.getElementById('bpKpis').innerHTML = emptyKpi('Nenhuma medição de pressão arterial encontrada.');
+    document.getElementById('bpCountBadge').textContent = '0';
+    document.querySelector('#bpTable tbody').innerHTML = '';
+    killChart('bpChart');
+    return;
+  }
+  const last = bp[bp.length-1];
+  document.getElementById('bpKpis').innerHTML = [
+    kpiCard('Sistólica média', mean(bp.map(b=>b.sys)).toFixed(0),'mmHg','','var(--heart)'),
+    kpiCard('Diastólica média', mean(bp.map(b=>b.dia)).toFixed(0),'mmHg','','var(--sleep)'),
+    kpiCard('Pulso médio', bp.some(b=>b.pulse)? mean(bp.filter(b=>b.pulse).map(b=>b.pulse)).toFixed(0):'—','bpm',''),
+    kpiCard('Última leitura', `${last.sys.toFixed(0)}/${last.dia.toFixed(0)}`,'mmHg', `${fmtDate(last.t)} · ${last.cat.label}`, last.cat.color),
+  ].join('');
+
+  lineChart('bpChart', bp.map(b=>fmtDate(b.t)), [
+    {label:'Sistólica', data:bp.map(b=>b.sys), borderColor:'#ff5d6c', backgroundColor:'#ff5d6c1a', fill:false, points:true},
+    {label:'Diastólica', data:bp.map(b=>b.dia), borderColor:'#5db8ff', backgroundColor:'#5db8ff1a', fill:false, points:true},
+  ], {y:{title:{display:true,text:'mmHg'}}});
+
+  document.getElementById('bpCountBadge').textContent = bp.length + ' medições';
+  document.querySelector('#bpTable tbody').innerHTML = bp.slice().reverse().map(b=>`
+    <tr><td>${fmtDate(b.t)} ${fmtHM(b.t)}</td><td>${b.sys.toFixed(0)}</td><td>${b.dia.toFixed(0)}</td><td>${b.pulse?b.pulse.toFixed(0):'—'}</td><td>${b.map?b.map.toFixed(0):'—'}</td>
+    <td><span class="cat-pill" style="background:${b.cat.color}22;color:${b.cat.color}">${b.cat.label}</span></td></tr>`).join('');
+}
+
+function renderHeartHrv(){
+  const kpis = document.getElementById('hrvKpis');
+  const note = document.getElementById('hrvEmptyNote');
+  if (!D.hrvAvailable){
+    kpis.innerHTML = ''; note.innerHTML = 'Nenhum registro de HRV encontrado no export (o arquivo <span class="mono">com.samsung.health.hrv.*.csv</span> não veio na pasta selecionada, ou seu relógio não mede HRV).';
+    killChart('hrvChart'); return;
+  }
+  if (!D.hrvResolved){
+    kpis.innerHTML = '';
+    note.innerHTML = `Encontramos ${(state.raw.hrv||[]).length} registros de HRV, mas os valores em ms (SDNN/RMSSD) ficam guardados em arquivos
+      <span class="mono">jsons/com.samsung.health.hrv/.../*.binning_data.json</span> dentro da exportação — e não encontramos esses arquivos
+      na pasta selecionada. Confirme que você escolheu a pasta-raiz do export (que contém a subpasta <span class="mono">jsons/</span>) e tente novamente.`;
+    killChart('hrvChart'); return;
+  }
+  const hrv = filterByRange(D.hrv, r=>r.t);
+  if (!hrv.length){ kpis.innerHTML = emptyKpi('Nenhuma leitura de HRV no período selecionado.'); note.innerHTML=''; killChart('hrvChart'); return; }
+  note.innerHTML = '';
+  kpis.innerHTML = [
+    kpiCard('RMSSD médio', mean(hrv.map(h=>h.rmssd)).toFixed(1),'ms','','var(--sleep)'),
+    kpiCard('SDNN médio', hrv.some(h=>h.sdnn!=null)? mean(hrv.filter(h=>h.sdnn!=null).map(h=>h.sdnn)).toFixed(1):'—','ms',''),
+    kpiCard('Leituras', hrv.length,'','no período'),
+    kpiCard('Última leitura', fmtDate(hrv[hrv.length-1].t),'', `RMSSD ${hrv[hrv.length-1].rmssd} ms`),
+  ].join('');
+  lineChart('hrvChart', hrv.map(h=>fmtDate(h.t)), [
+    {label:'RMSSD (ms)', data:hrv.map(h=>h.rmssd), borderColor:'#c792ff', backgroundColor:'#c792ff22', fill:true, points:false},
+    {label:'SDNN (ms)', data:hrv.map(h=>h.sdnn), borderColor:'#5db8ff', backgroundColor:'transparent', fill:false, points:false},
+  ]);
+}
+
+function renderHeartO2Resp(){
+  const spo2 = filterByRange(D.spo2, r=>r.t);
+  const resp = filterByRange(D.resp, r=>r.t);
+  document.getElementById('spo2Badge').textContent = spo2.length? `méd. ${mean(spo2.map(s=>s.v)).toFixed(0)}% · mín. ${Math.min(...spo2.map(s=>s.v)).toFixed(0)}%` : 'sem dados';
+  document.getElementById('respBadge').textContent = resp.length? `méd. ${mean(resp.map(r=>r.v)).toFixed(1)} mrpm` : 'sem dados';
+  if (spo2.length) lineChart('spo2Chart', spo2.map(s=>fmtDate(s.t)), [{label:'SpO2 (%)', data:spo2.map(s=>s.v), borderColor:'#5db8ff', backgroundColor:'#5db8ff22', fill:true, points:false}], {y:{suggestedMin:85, suggestedMax:100}});
+  else killChart('spo2Chart');
+  if (resp.length) lineChart('respChart', resp.map(r=>fmtDate(r.t)), [{label:'Resp./min', data:resp.map(r=>+r.v.toFixed(1)), borderColor:'#4ee6a0', backgroundColor:'#4ee6a022', fill:true, points:false}]);
+  else killChart('respChart');
+}
+
+function renderHeartTemp(){
+  const t = filterByRange(D.skinTemp, r=>r.t);
+  document.getElementById('tempBadge').textContent = t.length? `méd. ${mean(t.map(x=>x.v)).toFixed(1)}°C` : 'sem dados';
+  if (!t.length){ killChart('tempChart'); return; }
+  lineChart('tempChart', t.map(x=>fmtDate(x.t)), [
+    {label:'Temperatura (°C)', data:t.map(x=>x.v), borderColor:'#ffb84e', backgroundColor:'#ffb84e22', fill:true, points:false},
+    {label:'Linha de base', data:t.map(x=>x.baseline), borderColor:'#5b6672', backgroundColor:'transparent', fill:false, points:false, borderDash:[4,3]},
+  ]);
+}
+
+function renderHeartAgeAntiox(){
+  const ax = filterByRange(D.antioxidant, r=>r.t);
+  const age = filterByRange(D.age, r=>r.t);
+  document.getElementById('antioxBadge').textContent = ax.length? `méd. ${mean(ax.map(a=>a.v)).toFixed(0)}` : 'sem dados';
+  document.getElementById('ageBadge').textContent = age.length? `méd. ${mean(age.map(a=>a.percent)).toFixed(0)}%` : 'sem dados';
+  if (ax.length) lineChart('antioxChart', ax.map(a=>fmtDate(a.t)), [{label:'Índice', data:ax.map(a=>a.v), borderColor:'#4ee6a0', backgroundColor:'#4ee6a022', fill:true, points:true}], {y:{suggestedMin:0,suggestedMax:100}});
+  else killChart('antioxChart');
+  if (age.length) lineChart('ageChart', age.map(a=>fmtDate(a.t)), [{label:'AGE (percentil)', data:age.map(a=>a.percent), borderColor:'#ffb84e', backgroundColor:'#ffb84e22', fill:true, points:true}], {y:{suggestedMin:0,suggestedMax:100}});
+  else killChart('ageChart');
+}
+
+function renderHeartEcg(){
+  const ecg = filterByRange(D.ecg, r=>r.t);
+  if (!ecg.length){
+    document.getElementById('ecgKpis').innerHTML = emptyKpi('Nenhuma leitura de ECG encontrada.');
+    document.getElementById('ecgCountBadge').textContent = '0';
+    document.querySelector('#ecgTable tbody').innerHTML = '';
+    return;
+  }
+  const withHr = ecg.filter(e=>e.meanHr);
+  document.getElementById('ecgKpis').innerHTML = [
+    kpiCard('Leituras', ecg.length,'','no período'),
+    kpiCard('FC média nas leituras', withHr.length? mean(withHr.map(e=>e.meanHr)).toFixed(0):'—','bpm'),
+    kpiCard('Última leitura', fmtDate(ecg[0].t),'', fmtHM(ecg[0].t)),
+    kpiCard('Amostras por leitura', ecg[0].samples?ecg[0].samples:'—','', '~500 Hz'),
+  ].join('');
+  document.getElementById('ecgCountBadge').textContent = ecg.length + ' leituras';
+  document.querySelector('#ecgTable tbody').innerHTML = ecg.map(e=>`
+    <tr><td>${fmtDate(e.t)} ${fmtHM(e.t)}</td><td>${e.meanHr?e.meanHr.toFixed(0):'—'}</td><td>${e.samples||'—'}</td><td>${e.classification??'—'}</td></tr>
+  `).join('');
+}
+
+function renderHeartScores(){
+  const hhs = filterByRange(D.heartScore, r=>r.t);
+  const vit = filterByRange(D.vitalityScore, r=>r.t);
+  const fit = D.fitnessScore;
+
+  document.getElementById('hhsBadge').textContent = hhs.length? hhs.length+' dias' : 'sem dados';
+  if (hhs.length){
+    lineChart('hhsChart', hhs.map(h=>fmtDate(h.t)), [{label:'Score total', data:hhs.map(h=>h.total), borderColor:'#ff5d6c', backgroundColor:'#ff5d6c22', fill:true, points:false}], {y:{suggestedMin:0,suggestedMax:100}});
+    const last = hhs[hhs.length-1];
+    const rows = [['Exercício',last.exercise],['Sono',last.sleep],['IMC',last.bmi],['Pressão arterial (MAP)',last.map]];
+    document.getElementById('hhsBreakdown').innerHTML = rows.map(([label,v])=>`
+      <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-dim);"><span>${label}</span><span>${v!=null?v.toFixed(0):'—'}</span></div>
+      <div class="scorebar"><div style="width:${v||0}%;background:#ff5d6c;"></div></div></div>`).join('');
+  } else { killChart('hhsChart'); document.getElementById('hhsBreakdown').innerHTML=''; }
+
+  document.getElementById('vitBadge').textContent = vit.length? vit.length+' dias' : 'sem dados';
+  if (vit.length) lineChart('vitChart', vit.map(v=>fmtDate(v.t)), [{label:'Vitality score', data:vit.map(v=>v.total!=null?+v.total.toFixed(0):null), borderColor:'#c792ff', backgroundColor:'#c792ff22', fill:true, points:false}], {y:{suggestedMin:0,suggestedMax:100}});
+  else killChart('vitChart');
+
+  const fitGrid = document.getElementById('fitnessGrid');
+  if (fit.length){
+    const last = fit[fit.length-1];
+    document.getElementById('fitnessDate').textContent = fmtDate(last.t);
+    const items = [['Geral',last.total],['Flexibilidade',last.flexibility],['Força',last.strength],['Cardio',last.cardio],['Resistência',last.endurance]];
+    fitGrid.innerHTML = items.map(([l,v])=>`<div><div class="v">${v!=null?v.toFixed(0):'—'}</div><div class="l">${l}</div></div>`).join('');
+  } else { fitGrid.innerHTML = '<div style="color:var(--ink-faint);font-size:12px;grid-column:1/-1;">Nenhum dado de aptidão física encontrado.</div>'; document.getElementById('fitnessDate').textContent=''; }
+}
+
 /* ---------------- SLEEP ---------------- */
 function renderSleep(){
   const sleep = filterByRange(D.sleep, r=>r.wake);
   if (!sleep.length){
-    document.getElementById('sleepKpis').innerHTML = kpiCard('Sem dados','—','','Nenhuma sessão de sono encontrada.');
+    document.getElementById('sleepKpis').innerHTML = emptyKpi('Nenhuma sessão de sono encontrada.');
+    killChart('sleepStackChart'); killChart('sleepRegularityChart'); killChart('sleepWeekendChart'); killChart('snoreChart');
+    document.querySelector('#sleepTable tbody').innerHTML='';
+    document.getElementById('apneaBox').innerHTML = '';
     return;
   }
   const durs = sleep.map(s=>s.durMin);
-  const eff = sleep.map(s=> s.mins.light+s.mins.deep+s.mins.rem ? (s.mins.light+s.mins.deep+s.mins.rem)/s.durMin*100 : null).filter(x=>x!=null);
 
   document.getElementById('sleepKpis').innerHTML = [
     kpiCard('Duração média', fmtMin(mean(durs)),'', `${sleep.length} noites`,'var(--sleep)'),
@@ -840,7 +1476,6 @@ function renderSleep(){
     {label:'Desperto', data:sleep.map(s=>+(s.mins.awake).toFixed(0)), backgroundColor:'#3a4552'},
   ], {stacked:true, y:{title:{display:true,text:'minutos'}}});
 
-  // regularity: bedtime and wake time as hour-of-day (handle bedtime past midnight)
   const bedHours = sleep.map(s=>{ let h = s.bedtime.getHours()+s.bedtime.getMinutes()/60; if (h<12) h+=24; return h; });
   const wakeHours = sleep.map(s=> s.wake.getHours()+s.wake.getMinutes()/60);
   lineChart('sleepRegularityChart', labels, [
@@ -848,14 +1483,27 @@ function renderSleep(){
     {label:'Acordou (h)', data: wakeHours.map(h=>+h.toFixed(2)), borderColor:'#ffb84e', points:true, fill:false},
   ], {y:{title:{display:true,text:'hora do dia (24=meia-noite)'}}});
 
-  // weekday vs weekend duration
   const weekday=[], weekend=[];
   sleep.forEach(s=>{ const d=s.wake.getDay(); (d===0||d===6? weekend:weekday).push(s.durMin/60); });
-  barChart('sleepWeekendChart', ['Dias de semana','Fim de semana'], [{label:'Duração média (h)', data:[+mean(weekday||[0]).toFixed(2)||0, +mean(weekend||[0]).toFixed(2)||0], backgroundColor:['#5db8ff99','#c792ff99'], borderRadius:6}]);
+  barChart('sleepWeekendChart', ['Dias de semana','Fim de semana'], [{label:'Duração média (h)', data:[+ (mean(weekday)||0).toFixed(2), +(mean(weekend)||0).toFixed(2)], backgroundColor:['#5db8ff99','#c792ff99'], borderRadius:6}]);
+
+  const nightsWithSnore = sleep.filter(s=>s.snoreMin>0).length;
+  document.getElementById('snoreBadge').textContent = nightsWithSnore ? `${nightsWithSnore} de ${sleep.length} noites` : 'sem ronco detectado';
+  barChart('snoreChart', labels, [{label:'Minutos com ronco', data:sleep.map(s=>+s.snoreMin.toFixed(0)), backgroundColor:'#ffb84e99', borderRadius:4}]);
+
+  const apnea = D.apnea;
+  if (!apnea.length){
+    document.getElementById('apneaBox').innerHTML = 'Nenhuma medição de apneia do sono encontrada no export (recurso do Samsung Health Monitor, medido manualmente).';
+  } else {
+    document.getElementById('apneaBox').innerHTML = `
+      <p style="margin:0 0 8px;">${apnea.length} medição(ões) encontrada(s):</p>
+      ${apnea.slice().reverse().map(a=>`<div style="margin-bottom:4px;">• ${fmtDate(a.t)} — índice médio de dessaturação: <b>${a.avgBd!=null?a.avgBd.toFixed(1):'—'}</b>${a.result===0?' · sem risco relevante indicado pelo app':''}</div>`).join('')}
+      <p class="disclaimer" style="margin-top:10px;">Resultado bruto do app; não substitui uma polissonografia nem orientação médica.</p>
+    `;
+  }
 
   document.getElementById('sleepNightsBadge').textContent = sleep.length + ' noites';
-  const tb = document.querySelector('#sleepTable tbody');
-  tb.innerHTML = sleep.slice().reverse().map(s=>`
+  document.querySelector('#sleepTable tbody').innerHTML = sleep.slice().reverse().map(s=>`
     <tr><td>${fmtDate(s.wake)}</td><td>${fmtHM(s.bedtime)}</td><td>${fmtHM(s.wake)}</td><td>${fmtMin(s.durMin)}</td>
     <td>${fmtMin(s.mins.light)}</td><td>${fmtMin(s.mins.deep)}</td><td>${fmtMin(s.mins.rem)}</td><td>${fmtMin(s.mins.awake)}</td><td>${s.awakenings}</td></tr>
   `).join('');
@@ -863,9 +1511,11 @@ function renderSleep(){
 
 /* ---------------- EXERCISE ---------------- */
 function renderExercise(){
-  const ex = filterByRange(D.exercise, r=>r.start);
+  const ex = filterExercise(D.exercise);
   if (!ex.length){
-    document.getElementById('exKpis').innerHTML = kpiCard('Sem dados','—','','Nenhuma sessão de exercício encontrada.');
+    document.getElementById('exKpis').innerHTML = emptyKpi('Nenhuma sessão de exercício encontrada para o filtro atual.');
+    killChart('exDistChart'); killChart('exCalChart'); killChart('exLoadChart'); killChart('exScatterChart'); killChart('exTypeHrChart');
+    document.querySelector('#exTable tbody').innerHTML='';
     return;
   }
   const totalKm = ex.reduce((a,e)=>a+e.distanceKm,0);
@@ -873,87 +1523,111 @@ function renderExercise(){
   const withHr = ex.filter(e=>e.meanHr);
 
   document.getElementById('exKpis').innerHTML = [
-    kpiCard('Sessões', ex.length,'', 'no período','var(--exercise)'),
+    kpiCard('Sessões', ex.length,'', 'no filtro atual','var(--exercise)'),
     kpiCard('Distância total', totalKm.toFixed(1),'km','','var(--exercise)'),
     kpiCard('Calorias totais', Math.round(totalCal).toLocaleString('pt-BR'),'kcal','','var(--exercise)'),
     kpiCard('FC média em treino', withHr.length? mean(withHr.map(e=>e.meanHr)).toFixed(0):'—','bpm','','var(--exercise)'),
   ].join('');
 
-  // weekly aggregation
-  const weekMap = {}; // weekKey -> {km, cal}
-  ex.forEach(e=>{
-    const wk = weekKey(e.start);
-    weekMap[wk] = weekMap[wk] || {km:0,cal:0};
-    weekMap[wk].km += e.distanceKm; weekMap[wk].cal += (e.calorie||0);
-  });
+  const weekMap = {};
+  ex.forEach(e=>{ const wk = weekKey(e.start); weekMap[wk] = weekMap[wk] || {km:0,cal:0}; weekMap[wk].km += e.distanceKm; weekMap[wk].cal += (e.calorie||0); });
   const wkeys = Object.keys(weekMap).sort();
   barChart('exDistChart', wkeys, [{label:'km',data:wkeys.map(k=>+weekMap[k].km.toFixed(1)),backgroundColor:'#4ee6a099',borderRadius:4}]);
   barChart('exCalChart', wkeys, [{label:'kcal',data:wkeys.map(k=>Math.round(weekMap[k].cal)),backgroundColor:'#4ee6a099',borderRadius:4}]);
 
-  // training load
   const tl = D.trainingLoad;
   if (tl.length){
     lineChart('exLoadChart', tl.map(t=>fmtDate(t.t)), [
       {label:'Carga aguda', data:tl.map(t=>t.acute!=null?+t.acute.toFixed(1):null), borderColor:'#4ee6a0', points:false},
       {label:'Carga crônica', data:tl.map(t=>t.chronic!=null?+t.chronic.toFixed(1):null), borderColor:'#ffb84e', points:false},
     ]);
-  } else {
-    killChart('exLoadChart');
-  }
+  } else killChart('exLoadChart');
 
-  // scatter distance vs mean hr
-  scatterChart('exScatterChart', [{
-    label:'Sessões', data: withHr.map(e=>({x:+e.distanceKm.toFixed(2), y:e.meanHr})),
-    backgroundColor:'#4ee6a0'
-  }], {xLabel:'distância (km)', yLabel:'FC média (bpm)'});
+  scatterChart('exScatterChart', [{label:'Sessões', data: withHr.map(e=>({x:+e.distanceKm.toFixed(2), y:e.meanHr})), backgroundColor:'#4ee6a0'}], {xLabel:'distância (km)', yLabel:'FC média (bpm)'});
+
+  const byType = {};
+  withHr.forEach(e=>{ (byType[e.type]=byType[e.type]||[]).push(e.meanHr); });
+  const typeKeys = Object.keys(byType).sort((a,b)=>byType[b].length-byType[a].length);
+  if (typeKeys.length) barChart('exTypeHrChart', typeKeys.map(t=>activityName(Number(t))), [{label:'FC média (bpm)', data:typeKeys.map(t=>+mean(byType[t]).toFixed(0)), backgroundColor:'#ff5d6c99', borderRadius:4}], {chart:{indexAxis:'y'}});
+  else killChart('exTypeHrChart');
 
   document.getElementById('exCountBadge').textContent = ex.length + ' sessões';
-  const tb = document.querySelector('#exTable tbody');
-  tb.innerHTML = ex.slice().reverse().map(e=>`
+  document.querySelector('#exTable tbody').innerHTML = ex.slice().reverse().map(e=>`
     <tr><td>${fmtDate(e.start)}</td><td class="mono" style="font-family:Inter">${activityName(e.type)}</td>
     <td>${e.durMin?fmtMin(e.durMin):'—'}</td><td>${e.distanceKm?e.distanceKm.toFixed(2)+' km':'—'}</td>
     <td>${e.calorie?Math.round(e.calorie)+' kcal':'—'}</td><td>${e.meanHr??'—'}</td><td>${e.maxHr??'—'}</td></tr>
   `).join('');
 }
-function weekKey(d){
-  const dt = new Date(d); const day=(dt.getDay()+6)%7; dt.setDate(dt.getDate()-day);
-  return fmtDate(dt);
-}
 
 /* ---------------- EVOLUTION ---------------- */
 function renderEvolution(){
-  lineChart('evoWeightChart', D.weight.map(w=>fmtDate(w.t)), [{label:'kg',data:D.weight.map(w=>w.v),borderColor:'#ffb84e',fill:false,points:true}]);
+  const weight = filterByRange(D.weight, r=>r.t);
+  const steps = filterByRange(D.steps, r=>r.t);
+  const sleep = filterByRange(D.sleep, r=>r.wake);
+  const hr = filterByRange(D.hr, r=>r.t);
+  const ex = filterExercise(D.exercise);
+  const stress = filterByRange(D.stress, r=>r.t);
+  const bp = filterByRange(D.bp, r=>r.t);
+  const spo2 = filterByRange(D.spo2, r=>r.t);
+  const water = filterByRange(D.water, r=>r.t);
+  const floors = filterByRange(D.floors, r=>r.t);
+  const fit = filterByRange(D.fitnessScore, r=>r.t);
+  const mood = filterByRange(D.mood, r=>r.t);
+  const badges = filterByRange(D.badges, r=>r.t);
 
-  const stepsSorted = D.steps;
-  const ma7 = movingAvg(stepsSorted.map(s=>s.steps),7);
-  lineChart('evoStepsChart', stepsSorted.map(s=>fmtDate(s.t)), [{label:'passos (MM7)',data:ma7,borderColor:'#4ee6a0',backgroundColor:'#4ee6a022',fill:true,points:false}]);
+  lineChart('evoWeightChart', weight.map(w=>fmtDate(w.t)), [{label:'kg',data:weight.map(w=>w.v),borderColor:'#ffb84e',fill:false,points:true}]);
 
-  lineChart('evoSleepChart', D.sleep.map(s=>fmtDate(s.wake)), [{label:'horas',data:D.sleep.map(s=>+(s.durMin/60).toFixed(2)),borderColor:'#5db8ff',fill:false,points:false}]);
+  const ma7 = movingAvg(steps.map(s=>s.steps),7);
+  lineChart('evoStepsChart', steps.map(s=>fmtDate(s.t)), [{label:'passos (MM7)',data:ma7,borderColor:'#4ee6a0',backgroundColor:'#4ee6a022',fill:true,points:false}]);
 
-  const hrByDay = groupByDay(D.hr, r=>r.t, r=>r.v);
+  lineChart('evoSleepChart', sleep.map(s=>fmtDate(s.wake)), [{label:'horas',data:sleep.map(s=>+(s.durMin/60).toFixed(2)),borderColor:'#5db8ff',fill:false,points:false}]);
+
+  const hrByDay = groupByDay(hr, r=>r.t, r=>r.v);
   lineChart('evoHrChart', hrByDay.labels, [{label:'bpm',data:hrByDay.values,borderColor:'#ff5d6c',fill:false,points:false}]);
 
   const exWeekMap = {};
-  D.exercise.forEach(e=>{ const wk=weekKey(e.start); exWeekMap[wk]=(exWeekMap[wk]||0)+1; });
+  ex.forEach(e=>{ const wk=weekKey(e.start); exWeekMap[wk]=(exWeekMap[wk]||0)+1; });
   const exKeys = Object.keys(exWeekMap).sort();
   barChart('evoExChart', exKeys, [{label:'sessões',data:exKeys.map(k=>exWeekMap[k]),backgroundColor:'#4ee6a099',borderRadius:4}]);
 
-  const stressByDay = groupByDay(D.stress, r=>r.t, r=>r.v);
+  const stressByDay = groupByDay(stress, r=>r.t, r=>r.v);
   lineChart('evoStressChart', stressByDay.labels, [{label:'estresse',data:stressByDay.values,borderColor:'#c792ff',fill:false,points:false}]);
-}
-function movingAvg(arr,n){
-  return arr.map((_,i)=>{
-    const s = Math.max(0,i-n+1);
-    const slice = arr.slice(s,i+1).filter(x=>x!=null);
-    return slice.length? +mean(slice).toFixed(0) : null;
-  });
+
+  if (bp.length) lineChart('evoBpChart', bp.map(b=>fmtDate(b.t)), [
+    {label:'Sistólica', data:bp.map(b=>b.sys), borderColor:'#ff5d6c', points:true, fill:false},
+    {label:'Diastólica', data:bp.map(b=>b.dia), borderColor:'#5db8ff', points:true, fill:false},
+  ]); else killChart('evoBpChart');
+
+  const spo2ByDay = groupByDay(spo2, r=>r.t, r=>r.v);
+  if (spo2.length) lineChart('evoSpo2Chart', spo2ByDay.labels, [{label:'SpO2 (%)', data:spo2ByDay.values, borderColor:'#5db8ff', backgroundColor:'#5db8ff22', fill:true, points:false}], {y:{suggestedMin:85,suggestedMax:100}});
+  else killChart('evoSpo2Chart');
+
+  const waterByDay = groupSumByDay(water, r=>r.t, r=>r.ml);
+  if (water.length) barChart('evoWaterChart', waterByDay.labels, [{label:'ml', data:waterByDay.values, backgroundColor:'#5db8ff99', borderRadius:4}]);
+  else killChart('evoWaterChart');
+
+  if (floors.length) barChart('evoFloorsChart', floors.map(f=>fmtDate(f.t)), [{label:'andares', data:floors.map(f=>f.count), backgroundColor:'#ffb84e99', borderRadius:4}]);
+  else killChart('evoFloorsChart');
+
+  if (fit.length) lineChart('evoFitnessChart', fit.map(f=>fmtDate(f.t)), [{label:'score', data:fit.map(f=>f.total!=null?+f.total.toFixed(0):null), borderColor:'#c792ff', backgroundColor:'#c792ff22', fill:true, points:true}], {y:{suggestedMin:0,suggestedMax:100}});
+  else killChart('evoFitnessChart');
+
+  if (mood.length) lineChart('evoMoodChart', mood.map(m=>fmtDate(m.t)), [{label:'nível (1–5)', data:mood.map(m=>m.v), borderColor:'#ffb84e', points:true, fill:false}], {y:{min:1,max:5,ticks:{stepSize:1}, title:{display:true,text:'escala bruta do app, 1–5'}}});
+  else killChart('evoMoodChart');
+
+  document.getElementById('badgeCountBadge').textContent = badges.length + ' conquistas';
+  document.getElementById('badgeList').innerHTML = badges.slice(0,40).map(b=>`
+    <div class="badge-row"><span class="ic">🏅</span>${prettyBadge(b.key)}<span class="when">${fmtDate(b.t)}</span></div>
+  `).join('') || '<div style="color:var(--ink-faint);font-size:12.5px;">Nenhuma conquista no período selecionado.</div>';
 }
 
 /* ---------------- CROSS ANALYSIS ---------------- */
 function renderCross(){
-  // daily aggregate table
   const dailyHr = {}; D.hr.forEach(r=>{ const k=dayKey(r.t); (dailyHr[k]=dailyHr[k]||[]).push(r.v); });
   const dailyStress = {}; D.stress.forEach(r=>{ const k=dayKey(r.t); (dailyStress[k]=dailyStress[k]||[]).push(r.v); });
+  const dailyBp = {}; D.bp.forEach(r=>{ const k=dayKey(r.t); (dailyBp[k]=dailyBp[k]||[]).push(r.sys); });
+  const dailyMood = {}; D.mood.forEach(r=>{ const k=dayKey(r.t); (dailyMood[k]=dailyMood[k]||[]).push(r.v); });
+  const dailyHrv = {}; D.hrv.forEach(r=>{ const k=dayKey(r.t); (dailyHrv[k]=dailyHrv[k]||[]).push(r.rmssd); });
   const exerciseDays = new Set(D.exercise.map(e=>dayKey(e.start)));
   const stepsByDay = {}; D.steps.forEach(s=>{ stepsByDay[dayKey(s.t)] = s.steps; });
 
@@ -961,22 +1635,16 @@ function renderCross(){
   const shortHr = [], normalHr = [];
   const sleepStressPairs = [];
   D.sleep.forEach(s=>{
-    const nextDay = new Date(s.wake); nextDay.setDate(nextDay.getDate()); // wake day itself represents "day after sleeping"
     const key = dayKey(s.wake);
     const hrVals = dailyHr[key];
-    if (hrVals && hrVals.length){
-      const avg = mean(hrVals);
-      (s.durMin < 390 ? shortHr : normalHr).push(avg);
-    }
+    if (hrVals && hrVals.length){ (s.durMin < 390 ? shortHr : normalHr).push(mean(hrVals)); }
     const stressVals = dailyStress[key];
-    if (stressVals && stressVals.length){
-      sleepStressPairs.push([s.durMin/60, mean(stressVals)]);
-    }
+    if (stressVals && stressVals.length) sleepStressPairs.push([s.durMin/60, mean(stressVals)]);
   });
   barChart('crossSleepHrChart', ['Sono < 6h30','Sono ≥ 6h30'], [{label:'FC média do dia (bpm)',data:[shortHr.length?+mean(shortHr).toFixed(1):null, normalHr.length?+mean(normalHr).toFixed(1):null],backgroundColor:['#ff5d6c99','#5db8ff99'],borderRadius:6}]);
   document.getElementById('crossSleepHrNote').innerHTML = (shortHr.length&&normalHr.length)
     ? `Com base em ${shortHr.length} dia(s) de sono curto e ${normalHr.length} dia(s) de sono normal: FC média ${mean(shortHr)>mean(normalHr)?'foi maior':'foi menor ou igual'} nos dias após sono curto (${mean(shortHr).toFixed(1)} vs ${mean(normalHr).toFixed(1)} bpm).`
-    : 'Dados insuficientes ainda para comparar — precisa de dias com FC registrada tanto após sono curto quanto após sono normal.';
+    : 'Dados insuficientes ainda para comparar.';
 
   // 2) exercise day vs rest day -> avg HR that day
   const exDayHr = [], restDayHr = [];
@@ -995,16 +1663,57 @@ function renderCross(){
 
   // 4) steps -> sleep duration that night
   const stepsSleepPairs = [];
-  D.sleep.forEach(s=>{
-    const key = dayKey(s.bedtime); // steps of the day leading into that night
-    const st = stepsByDay[key];
-    if (st!=null) stepsSleepPairs.push([st, s.durMin/60]);
-  });
+  D.sleep.forEach(s=>{ const st = stepsByDay[dayKey(s.bedtime)]; if (st!=null) stepsSleepPairs.push([st, s.durMin/60]); });
   scatterChart('crossStepsSleepChart', [{label:'Noites',data:stepsSleepPairs.map(([x,y])=>({x,y:+y.toFixed(2)})),backgroundColor:'#4ee6a0'}], {xLabel:'passos no dia', yLabel:'duração do sono à noite (h)'});
   const rPS = pearson(stepsSleepPairs.map(p=>p[0]), stepsSleepPairs.map(p=>p[1]));
   document.getElementById('crossStepsSleepNote').innerHTML = rPS!=null
     ? `Correlação (r) = ${rPS.toFixed(2)} entre ${stepsSleepPairs.length} dias. ${Math.abs(rPS)>0.3? (rPS>0?'Dias mais ativos parecem vir acompanhados de noites de sono mais longas.':'Dias mais ativos parecem vir acompanhados de noites de sono mais curtas.') : 'Ainda não há uma relação clara nos dados atuais.'}`
     : 'Dados insuficientes para essa comparação ainda.';
+
+  // 5) exercise day -> next day's systolic BP
+  const exNextBp = [], restNextBp = [];
+  Object.keys(dailyBp).forEach(k=>{
+    const prev = new Date(k+'T00:00:00'); prev.setDate(prev.getDate()-1);
+    (exerciseDays.has(dayKey(prev)) ? exNextBp : restNextBp).push(mean(dailyBp[k]));
+  });
+  barChart('crossExBpChart', ['Após dia com exercício','Após dia sem exercício'], [{label:'Sistólica média (mmHg)',data:[exNextBp.length?+mean(exNextBp).toFixed(1):null, restNextBp.length?+mean(restNextBp).toFixed(1):null],backgroundColor:['#4ee6a099','#8996a599'],borderRadius:6}]);
+  document.getElementById('crossExBpNote').innerHTML = (exNextBp.length && restNextBp.length)
+    ? `${exNextBp.length} dia(s) após exercício vs ${restNextBp.length} dia(s) após descanso. Sistólica média ${mean(exNextBp).toFixed(1)} vs ${mean(restNextBp).toFixed(1)} mmHg.`
+    : 'Dados insuficientes — é preciso ter medições de pressão em dias após exercício e após descanso.';
+
+  // 6) sleep duration -> next day HRV (RMSSD)
+  const sleepHrvPairs = [];
+  D.sleep.forEach(s=>{ const vals = dailyHrv[dayKey(s.wake)]; if (vals && vals.length) sleepHrvPairs.push([s.durMin/60, mean(vals)]); });
+  scatterChart('crossSleepHrvChart', [{label:'Noites', data:sleepHrvPairs.map(([x,y])=>({x:+x.toFixed(2), y:+y.toFixed(1)})), backgroundColor:'#5db8ff'}], {xLabel:'duração do sono (h)', yLabel:'RMSSD do dia seguinte (ms)'});
+  const rSH = pearson(sleepHrvPairs.map(p=>p[0]), sleepHrvPairs.map(p=>p[1]));
+  document.getElementById('crossSleepHrvNote').innerHTML = rSH!=null
+    ? `Correlação (r) = ${rSH.toFixed(2)} entre ${sleepHrvPairs.length} noites. ${Math.abs(rSH)>0.3? (rSH>0?'Noites mais longas tendem a vir acompanhadas de HRV mais alto (mais recuperação) no dia seguinte.':'Noites mais longas tendem a vir acompanhadas de HRV mais baixo no dia seguinte — vale observar outros fatores.') : 'Ainda não há uma relação clara nos dados atuais.'}`
+    : (D.hrvResolved ? 'Dados insuficientes (é preciso ter sono e HRV no mesmo período).' : 'HRV em ms não disponível — veja a seção HRV na página Coração.');
+
+  // 7) SpO2 during the night vs sleep efficiency that night
+  const spo2EffPairs = [];
+  D.sleep.forEach(s=>{
+    const vals = D.spo2.filter(x=>x.t>=s.bedtime && x.t<=s.wake).map(x=>x.v);
+    if (vals.length){
+      const totalTracked = s.mins.light+s.mins.deep+s.mins.rem;
+      const eff = s.durMin>0 ? totalTracked/s.durMin*100 : null;
+      if (eff!=null) spo2EffPairs.push([mean(vals), eff]);
+    }
+  });
+  scatterChart('crossSpo2SleepChart', [{label:'Noites', data:spo2EffPairs.map(([x,y])=>({x:+x.toFixed(1), y:+y.toFixed(1)})), backgroundColor:'#4ee6a0'}], {xLabel:'SpO2 médio durante a noite (%)', yLabel:'eficiência do sono (%)'});
+  const rSpE = pearson(spo2EffPairs.map(p=>p[0]), spo2EffPairs.map(p=>p[1]));
+  document.getElementById('crossSpo2SleepNote').innerHTML = rSpE!=null
+    ? `Correlação (r) = ${rSpE.toFixed(2)} entre ${spo2EffPairs.length} noites com leituras de SpO2 durante o sono.`
+    : 'Dados insuficientes — é preciso ter leituras de SpO2 durante o horário em que você dorme.';
+
+  // 8) stress vs mood, same day
+  const stressMoodPairs = [];
+  Object.keys(dailyMood).forEach(k=>{ const sv = dailyStress[k]; if (sv && sv.length) stressMoodPairs.push([mean(sv), mean(dailyMood[k])]); });
+  scatterChart('crossStressMoodChart', [{label:'Dias', data:stressMoodPairs.map(([x,y])=>({x:+x.toFixed(1), y:+y.toFixed(1)})), backgroundColor:'#ffb84e'}], {xLabel:'estresse médio do dia', yLabel:'humor registrado (escala bruta, 1–5)'});
+  const rStM = pearson(stressMoodPairs.map(p=>p[0]), stressMoodPairs.map(p=>p[1]));
+  document.getElementById('crossStressMoodNote').innerHTML = rStM!=null
+    ? `Correlação (r) = ${rStM.toFixed(2)} entre ${stressMoodPairs.length} dias. A escala de humor é o valor bruto (1–5) salvo pelo app — sua ordem exata (se 1 é o melhor ou o pior nível) não vem documentada no export, então use o |r| como força da relação, não a direção.`
+    : 'Dados insuficientes — é preciso ter estresse e humor registrados nos mesmos dias.';
 }
 
 </script>
